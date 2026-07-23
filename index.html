@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>近现代国共将领交互式历史年表</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    colors: {
+      kmt: { DEFAULT: '#2563eb', soft: '#93c5fd', bg: '#1e3a8a' },
+      ccp: { DEFAULT: '#dc2626', soft: '#fca5a5', bg: '#7f1d1d' }
+    }
+  } }
+}
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif; }
+  .track-row:hover .track-bar { filter: brightness(1.15); }
+  .marker { transition: transform .12s, box-shadow .12s; }
+  .marker:hover { transform: translate(-50%,-50%) scale(1.6); z-index: 30; }
+  .marker.hl { transform: translate(-50%,-50%) scale(1.7); box-shadow: 0 0 0 3px #fde047, 0 0 8px 2px #facc15; z-index: 40; }
+  .track-bar.dim { opacity: .18; filter: grayscale(1); }
+  .track-name.dim { opacity: .3; }
+  .track-bar.selected { outline: 2px solid #fde047; outline-offset: 1px; }
+  #panel { transition: transform .25s ease; }
+  #panel.hidden-panel { transform: translateY(100%); }
+  .era-band { position:absolute; top:0; bottom:0; z-index:0; }
+  ::-webkit-scrollbar { width: 9px; height: 9px; }
+  ::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius: 5px; }
+</style>
+</head>
+<body class="bg-slate-100 text-slate-800 h-screen flex flex-col overflow-hidden">
+
+  <!-- 顶栏 -->
+  <header class="bg-white border-b shadow-sm px-4 py-2 flex items-center gap-4 shrink-0">
+    <h1 class="text-lg font-bold text-slate-900 whitespace-nowrap">国共将领历史年表</h1>
+    <div class="flex items-center gap-3 text-xs">
+      <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-kmt inline-block"></span>国民党</span>
+      <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-ccp inline-block"></span>共产党</span>
+    </div>
+    <div class="flex items-center gap-2 text-[11px] text-slate-500 ml-2" id="era-legend"></div>
+    <div class="ml-auto flex items-center gap-2">
+      <input id="search" placeholder="搜索将领 / 战役…" class="border rounded px-3 py-1 text-sm w-52 focus:ring-2 focus:ring-blue-300 outline-none">
+      <button id="compareBtn" class="bg-amber-500 text-white text-sm px-3 py-1 rounded hover:bg-amber-600 disabled:opacity-40" disabled>对比交集 (0)</button>
+      <button id="resetBtn" class="text-sm px-3 py-1 rounded border hover:bg-slate-50">重置</button>
+    </div>
+  </header>
+
+  <div class="flex flex-1 min-h-0">
+    <!-- 左侧筛选面板 -->
+    <aside class="w-56 bg-white border-r overflow-y-auto shrink-0 text-sm">
+      <div class="p-3 space-y-4" id="filters"></div>
+    </aside>
+
+    <!-- 中部时间轴 -->
+    <main class="flex-1 flex flex-col min-w-0">
+      <div class="px-3 py-1.5 bg-slate-50 border-b text-xs text-slate-500 flex items-center gap-3 shrink-0">
+        <span id="count-hint">—</span>
+        <span class="ml-auto flex items-center gap-2">
+          时间区间：<span id="range-label" class="font-mono text-slate-700">全部</span>
+        </span>
+      </div>
+      <div id="timeline-scroll" class="flex-1 overflow-auto relative">
+        <div id="axis" class="sticky top-0 z-20 bg-white/95 backdrop-blur border-b h-7"></div>
+        <div id="tracks" class="relative"></div>
+      </div>
+      <!-- 时间区间刷选 -->
+      <div class="px-4 py-2 bg-white border-t shrink-0">
+        <div class="flex items-center gap-3 text-xs text-slate-500">
+          <span>区间筛选</span>
+          <input id="rangeStart" type="range" class="flex-1 accent-blue-600">
+          <input id="rangeEnd" type="range" class="flex-1 accent-red-600">
+          <button id="rangeClear" class="px-2 py-0.5 border rounded hover:bg-slate-50">清除</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 底部侧滑面板 -->
+  <section id="panel" class="hidden-panel fixed bottom-0 left-0 right-0 h-[62vh] bg-white border-t-2 border-slate-300 shadow-2xl z-50 flex flex-col">
+    <div class="flex items-center px-4 py-2 border-b bg-slate-50 shrink-0">
+      <h2 id="panel-title" class="font-bold text-slate-900"></h2>
+      <button id="panel-close" class="ml-auto text-slate-400 hover:text-slate-700 text-xl leading-none">&times;</button>
+    </div>
+    <div id="panel-body" class="p-4 overflow-y-auto text-sm"></div>
+  </section>
+
+  <div id="tooltip" class="fixed hidden bg-slate-900 text-white text-xs rounded px-2 py-1 z-[60] pointer-events-none max-w-xs"></div>
+
+  <script src="data/generals.js"></script>
+  <script src="data/battles.js"></script>
+  <script src="data/events.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
