@@ -8,87 +8,117 @@
 <script>
 tailwind.config = {
   theme: { extend: {
+    fontFamily: {
+      serif: ['"Noto Serif SC"', 'Georgia', 'STZhongsong', 'SimSun', 'serif'],
+      sans: ['"Microsoft YaHei"', '"PingFang SC"', 'sans-serif']
+    },
     colors: {
-      kmt: { DEFAULT: '#2563eb', soft: '#93c5fd', bg: '#1e3a8a' },
-      ccp: { DEFAULT: '#dc2626', soft: '#fca5a5', bg: '#7f1d1d' }
+      ink:  { DEFAULT: '#1c1917', soft: '#44403c', faint: '#78716c' },
+      kmt:  { DEFAULT: '#1d4ed8', deep: '#1e3a8a', soft: '#bfdbfe' },
+      ccp:  { DEFAULT: '#b91c1c', deep: '#7f1d1d', soft: '#fecaca' },
+      parchment: { DEFAULT: '#f5f1e8', dark: '#ebe4d5', card: '#fdfbf6' }
     }
   } }
 }
 </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 <style>
   html { scroll-behavior: smooth; }
-  body { font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif; }
-  .track-row:hover .track-bar { filter: brightness(1.15); }
-  .marker { transition: transform .12s, box-shadow .12s; }
-  .marker:hover { transform: translate(-50%,-50%) scale(1.6); z-index: 30; }
-  .marker.hl { transform: translate(-50%,-50%) scale(1.7); box-shadow: 0 0 0 3px #fde047, 0 0 8px 2px #facc15; z-index: 40; }
-  .track-bar.dim { opacity: .18; filter: grayscale(1); }
-  .track-name.dim { opacity: .3; }
-  .track-bar.selected { outline: 2px solid #fde047; outline-offset: 1px; }
-  #panel { transition: transform .25s ease; }
-  #panel.hidden-panel { transform: translateY(100%); }
-  .era-band { position:absolute; top:0; bottom:0; z-index:0; }
-  ::-webkit-scrollbar { width: 9px; height: 9px; }
-  ::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius: 5px; }
+  body { background:
+      radial-gradient(circle at 15% 15%, rgba(120,90,40,.05), transparent 40%),
+      radial-gradient(circle at 85% 85%, rgba(120,90,40,.05), transparent 40%),
+      #f5f1e8;
+  }
+  .font-hei { font-family: "Microsoft YaHei","PingFang SC",sans-serif; }
+  /* 轨迹条 */
+  .track-row:hover .life-bar { filter: brightness(1.05) saturate(1.2); }
+  .track-name { transition: color .15s, opacity .15s; letter-spacing: .02em; }
+  .life-bar { transition: opacity .25s, filter .2s, box-shadow .2s; }
+  .act-bar  { transition: opacity .25s; }
+  .marker { transition: transform .13s, box-shadow .13s; z-index: 5; }
+  .marker:hover { transform: translate(-50%,-50%) scale(1.55); z-index: 30; }
+  .marker.hl { transform: translate(-50%,-50%) scale(1.7); box-shadow: 0 0 0 3px #fbbf24, 0 0 10px 3px rgba(251,191,36,.7); z-index: 40; }
+  .dim { opacity: .14 !important; filter: grayscale(1); }
+  .name-dim { opacity: .28 !important; }
+  .life-bar.selected { box-shadow: 0 0 0 2px #f5f1e8, 0 0 0 4px #d97706; }
+  /* 面板 */
+  #panel { transition: transform .3s cubic-bezier(.4,0,.2,1); box-shadow: 0 -12px 40px -8px rgba(60,40,10,.28); }
+  #panel.hidden-panel { transform: translateY(101%); }
+  .era-band { position:absolute; top:0; bottom:0; z-index:0; pointer-events:none; }
+  .era-btn { transition: all .15s; }
+  .era-btn.active { color:#fff; box-shadow: 0 2px 8px -1px rgba(0,0,0,.25); transform: translateY(-1px); }
+  /* 成长轨迹时间线 */
+  .journey-line::before { content:''; position:absolute; left:11px; top:6px; bottom:6px; width:2px; background:linear-gradient(#d6cbb3, #c4b696); }
+  .jnode-dot { box-shadow: 0 0 0 3px #fdfbf6; }
+  /* 卡片质感 */
+  .card { background:#fdfbf6; border:1px solid #e3d9c4; box-shadow: 0 1px 3px rgba(60,40,10,.06), 0 6px 20px -8px rgba(60,40,10,.12); }
+  .hairline { border-color:#e3d9c4; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background:#d6cbb3; border-radius: 6px; border:2px solid #f5f1e8; }
+  ::-webkit-scrollbar-thumb:hover { background:#c4b696; }
+  .chip { transition: all .12s; }
+  .chip:hover { transform: translateY(-1px); }
 </style>
 </head>
-<body class="bg-slate-100 text-slate-800 h-screen flex flex-col overflow-hidden">
+<body class="text-ink h-screen flex flex-col overflow-hidden font-serif">
 
   <!-- 顶栏 -->
-  <header class="bg-white border-b shadow-sm px-4 py-2 flex items-center gap-4 shrink-0">
-    <h1 class="text-lg font-bold text-slate-900 whitespace-nowrap">国共将领历史年表</h1>
-    <div class="flex items-center gap-3 text-xs">
-      <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-kmt inline-block"></span>国民党</span>
-      <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-ccp inline-block"></span>共产党</span>
+  <header class="relative bg-gradient-to-r from-stone-900 via-stone-800 to-stone-900 text-parchment px-5 py-3 flex items-center gap-5 shrink-0 border-b-2 border-amber-700/40">
+    <div class="flex items-baseline gap-3">
+      <h1 class="text-xl font-bold tracking-wide">国共将领历史年表</h1>
+      <span class="text-[11px] text-amber-200/70 font-hei tracking-widest">1885 — 1950 · 交互式人物长卷</span>
     </div>
-    <div class="flex items-center gap-2 text-[11px] text-slate-500 ml-2" id="era-legend"></div>
-    <div class="ml-auto flex items-center gap-2">
-      <input id="search" placeholder="搜索将领 / 战役…" class="border rounded px-3 py-1 text-sm w-52 focus:ring-2 focus:ring-blue-300 outline-none">
-      <button id="compareBtn" class="bg-amber-500 text-white text-sm px-3 py-1 rounded hover:bg-amber-600 disabled:opacity-40" disabled>对比交集 (0)</button>
-      <button id="resetBtn" class="text-sm px-3 py-1 rounded border hover:bg-slate-50">重置</button>
+    <div class="flex items-center gap-4 text-xs font-hei ml-2">
+      <span class="flex items-center gap-1.5"><span class="w-3.5 h-2 rounded-sm inline-block" style="background:#1d4ed8"></span>国民党</span>
+      <span class="flex items-center gap-1.5"><span class="w-3.5 h-2 rounded-sm inline-block" style="background:#b91c1c"></span>共产党</span>
+      <span class="flex items-center gap-1.5 text-amber-100/60"><span class="w-2.5 h-2.5 rounded-full inline-block bg-white border-2 border-stone-400"></span>战役</span>
+      <span class="flex items-center gap-1.5 text-amber-100/60"><span class="w-2.5 h-2.5 rounded-full inline-block" style="background:#f59e0b"></span>事件</span>
+    </div>
+    <div class="ml-auto flex items-center gap-2 font-hei">
+      <input id="search" placeholder="搜索将领 / 战役…" class="bg-stone-700/60 border border-stone-600 text-parchment placeholder:text-stone-400 rounded-md px-3 py-1.5 text-sm w-52 focus:ring-2 focus:ring-amber-500/60 focus:bg-stone-700 outline-none transition">
+      <button id="compareBtn" class="bg-amber-600 text-white text-sm px-3.5 py-1.5 rounded-md hover:bg-amber-500 disabled:opacity-40 disabled:cursor-not-allowed transition font-medium" disabled>对比交集 (0)</button>
+      <button id="resetBtn" class="text-sm px-3 py-1.5 rounded-md border border-stone-600 hover:bg-stone-700 transition">重置</button>
     </div>
   </header>
 
+  <!-- 历史时期选择条 -->
+  <div class="bg-parchment-dark/70 border-b hairline px-5 py-2 flex items-center gap-3 shrink-0 font-hei">
+    <span class="text-xs text-ink-faint shrink-0">历史时期</span>
+    <div id="era-tabs" class="flex items-center gap-1.5 flex-wrap"></div>
+    <span id="era-hint" class="text-xs text-ink-faint ml-2 italic"></span>
+  </div>
+
   <div class="flex flex-1 min-h-0">
     <!-- 左侧筛选面板 -->
-    <aside class="w-56 bg-white border-r overflow-y-auto shrink-0 text-sm">
-      <div class="p-3 space-y-4" id="filters"></div>
+    <aside class="w-60 card border-y-0 border-l-0 overflow-y-auto shrink-0 text-sm font-hei">
+      <div class="p-4 space-y-5" id="filters"></div>
     </aside>
 
     <!-- 中部时间轴 -->
-    <main class="flex-1 flex flex-col min-w-0">
-      <div class="px-3 py-1.5 bg-slate-50 border-b text-xs text-slate-500 flex items-center gap-3 shrink-0">
+    <main class="flex-1 flex flex-col min-w-0 bg-parchment">
+      <div class="px-4 py-2 border-b hairline text-xs text-ink-soft flex items-center gap-3 shrink-0 font-hei bg-parchment-card/60">
         <span id="count-hint">—</span>
-        <span class="ml-auto flex items-center gap-2">
-          时间区间：<span id="range-label" class="font-mono text-slate-700">全部</span>
-        </span>
+        <span class="ml-auto text-ink-faint">点击轨迹条查看档案 · Shift+点击 多选对比</span>
       </div>
       <div id="timeline-scroll" class="flex-1 overflow-auto relative">
-        <div id="axis" class="sticky top-0 z-20 bg-white/95 backdrop-blur border-b h-7"></div>
+        <div id="axis" class="sticky top-0 z-20 h-8 bg-parchment-card/95 backdrop-blur border-b hairline"></div>
         <div id="tracks" class="relative"></div>
-      </div>
-      <!-- 时间区间刷选 -->
-      <div class="px-4 py-2 bg-white border-t shrink-0">
-        <div class="flex items-center gap-3 text-xs text-slate-500">
-          <span>区间筛选</span>
-          <input id="rangeStart" type="range" class="flex-1 accent-blue-600">
-          <input id="rangeEnd" type="range" class="flex-1 accent-red-600">
-          <button id="rangeClear" class="px-2 py-0.5 border rounded hover:bg-slate-50">清除</button>
-        </div>
       </div>
     </main>
   </div>
 
   <!-- 底部侧滑面板 -->
-  <section id="panel" class="hidden-panel fixed bottom-0 left-0 right-0 h-[62vh] bg-white border-t-2 border-slate-300 shadow-2xl z-50 flex flex-col">
-    <div class="flex items-center px-4 py-2 border-b bg-slate-50 shrink-0">
-      <h2 id="panel-title" class="font-bold text-slate-900"></h2>
-      <button id="panel-close" class="ml-auto text-slate-400 hover:text-slate-700 text-xl leading-none">&times;</button>
+  <section id="panel" class="hidden-panel fixed bottom-0 left-0 right-0 h-[70vh] bg-parchment-card border-t-2 border-amber-700/40 z-50 flex flex-col">
+    <div class="flex items-center px-5 py-3 border-b hairline bg-gradient-to-r from-stone-100 to-parchment-dark shrink-0">
+      <h2 id="panel-title" class="font-bold text-lg text-ink"></h2>
+      <button id="panel-close" class="ml-auto w-8 h-8 flex items-center justify-center rounded-full text-ink-faint hover:bg-stone-200 hover:text-ink text-2xl leading-none transition">&times;</button>
     </div>
-    <div id="panel-body" class="p-4 overflow-y-auto text-sm"></div>
+    <div id="panel-body" class="p-5 overflow-y-auto text-sm"></div>
   </section>
 
-  <div id="tooltip" class="fixed hidden bg-slate-900 text-white text-xs rounded px-2 py-1 z-[60] pointer-events-none max-w-xs"></div>
+  <div id="tooltip" class="fixed hidden bg-stone-900/95 text-parchment text-xs rounded-lg px-3 py-2 z-[60] pointer-events-none max-w-xs shadow-xl font-hei leading-relaxed"></div>
 
   <script src="data/generals.js"></script>
   <script src="data/battles.js"></script>
