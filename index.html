@@ -48,6 +48,14 @@ tailwind.config = {
   .era-band { position:absolute; top:0; bottom:0; z-index:0; pointer-events:none; }
   .era-btn { transition: all .15s; }
   .era-btn.active { color:#fff; box-shadow: 0 2px 8px -1px rgba(0,0,0,.25); transform: translateY(-1px); }
+  /* 模式切换 */
+  .mode-btn { background:#fdfbf6; color:#78716c; }
+  .mode-btn.active { background:linear-gradient(135deg,#b45309,#92400e); color:#fff; }
+  .mode-btn:not(.active):hover { background:#fff; color:#44403c; }
+  /* 档案 tab */
+  .doc-tab { transition: all .15s; border-bottom:2px solid transparent; color:#78716c; }
+  .doc-tab.active { color:#92400e; border-bottom-color:#b45309; font-weight:600; }
+  .doc-tab:not(.active):hover { color:#44403c; }
   /* 成长轨迹时间线 */
   .journey-line::before { content:''; position:absolute; left:11px; top:6px; bottom:6px; width:2px; background:linear-gradient(#d6cbb3, #c4b696); }
   .jnode-dot { box-shadow: 0 0 0 3px #fdfbf6; }
@@ -83,29 +91,48 @@ tailwind.config = {
     </div>
   </header>
 
-  <!-- 历史时期选择条 -->
+  <!-- 模式切换 + 历史时期选择条 -->
   <div class="bg-parchment-dark/70 border-b hairline px-5 py-2 flex items-center gap-3 shrink-0 font-hei">
-    <span class="text-xs text-ink-faint shrink-0">历史时期</span>
-    <div id="era-tabs" class="flex items-center gap-1.5 flex-wrap"></div>
-    <span id="era-hint" class="text-xs text-ink-faint ml-2 italic"></span>
+    <div id="mode-switch" class="flex items-center rounded-lg overflow-hidden border border-amber-700/40 shrink-0 shadow-sm">
+      <button class="mode-btn text-xs px-3.5 py-1.5 font-medium transition" data-mode="timeline">🕓 时间轴模式</button>
+      <button class="mode-btn text-xs px-3.5 py-1.5 font-medium transition" data-mode="war">⚔ 战争模式</button>
+    </div>
+    <div class="w-px h-5 bg-stone-300"></div>
+    <!-- 时间轴模式：时期筛选 -->
+    <div id="era-controls" class="flex items-center gap-3 flex-1 min-w-0">
+      <span class="text-xs text-ink-faint shrink-0">历史时期</span>
+      <div id="era-tabs" class="flex items-center gap-1.5 flex-wrap"></div>
+      <span id="era-hint" class="text-xs text-ink-faint ml-1 italic truncate"></span>
+    </div>
+    <!-- 战争模式：战役选择 -->
+    <div id="war-controls" class="hidden items-center gap-3 flex-1 min-w-0">
+      <span class="text-xs text-ink-faint shrink-0">选择战役 / 事件</span>
+      <select id="war-select" class="bg-parchment-card border border-amber-700/40 rounded-md px-3 py-1 text-sm text-ink focus:ring-2 focus:ring-amber-500/50 outline-none max-w-md"></select>
+      <span id="war-hint" class="text-xs text-ink-faint italic truncate"></span>
+    </div>
   </div>
 
   <div class="flex flex-1 min-h-0">
-    <!-- 左侧筛选面板 -->
-    <aside class="w-60 card border-y-0 border-l-0 overflow-y-auto shrink-0 text-sm font-hei">
+    <!-- 左侧筛选面板（仅时间轴模式） -->
+    <aside id="side-filters" class="w-60 card border-y-0 border-l-0 overflow-y-auto shrink-0 text-sm font-hei">
       <div class="p-4 space-y-5" id="filters"></div>
     </aside>
 
-    <!-- 中部时间轴 -->
+    <!-- 中部主区 -->
     <main class="flex-1 flex flex-col min-w-0 bg-parchment">
-      <div class="px-4 py-2 border-b hairline text-xs text-ink-soft flex items-center gap-3 shrink-0 font-hei bg-parchment-card/60">
-        <span id="count-hint">—</span>
-        <span class="ml-auto text-ink-faint">点击轨迹条查看档案 · Shift+点击 多选对比</span>
+      <!-- 时间轴视图 -->
+      <div id="view-timeline" class="flex-1 flex flex-col min-h-0">
+        <div class="px-4 py-2 border-b hairline text-xs text-ink-soft flex items-center gap-3 shrink-0 font-hei bg-parchment-card/60">
+          <span id="count-hint">—</span>
+          <span class="ml-auto text-ink-faint">点击轨迹条查看档案 · Shift+点击 多选对比</span>
+        </div>
+        <div id="timeline-scroll" class="flex-1 overflow-auto relative">
+          <div id="axis" class="sticky top-0 z-20 h-8 bg-parchment-card/95 backdrop-blur border-b hairline"></div>
+          <div id="tracks" class="relative"></div>
+        </div>
       </div>
-      <div id="timeline-scroll" class="flex-1 overflow-auto relative">
-        <div id="axis" class="sticky top-0 z-20 h-8 bg-parchment-card/95 backdrop-blur border-b hairline"></div>
-        <div id="tracks" class="relative"></div>
-      </div>
+      <!-- 战争视图 -->
+      <div id="view-war" class="hidden flex-1 overflow-auto p-5"></div>
     </main>
   </div>
 
