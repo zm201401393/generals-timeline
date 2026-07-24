@@ -86,6 +86,8 @@ tailwind.config = {
     </div>
     <div class="ml-auto flex items-center gap-2 font-hei">
       <input id="search" placeholder="搜索将领 / 战役…" class="bg-stone-700/60 border border-stone-600 text-parchment placeholder:text-stone-400 rounded-md px-3 py-1.5 text-sm w-52 focus:ring-2 focus:ring-amber-500/60 focus:bg-stone-700 outline-none transition">
+      <button id="addBtn" class="bg-emerald-700 text-white text-sm px-3.5 py-1.5 rounded-md hover:bg-emerald-600 transition font-medium">＋ 新增将领</button>
+      <button id="myBtn" class="text-sm px-3 py-1.5 rounded-md border border-stone-600 hover:bg-stone-700 transition">我的将领 <span id="myCount" class="text-amber-300">0</span></button>
       <button id="compareBtn" class="bg-amber-600 text-white text-sm px-3.5 py-1.5 rounded-md hover:bg-amber-500 disabled:opacity-40 disabled:cursor-not-allowed transition font-medium" disabled>对比交集 (0)</button>
       <button id="resetBtn" class="text-sm px-3 py-1.5 rounded-md border border-stone-600 hover:bg-stone-700 transition">重置</button>
     </div>
@@ -146,6 +148,19 @@ tailwind.config = {
   </section>
 
   <div id="tooltip" class="fixed hidden bg-stone-900/95 text-parchment text-xs rounded-lg px-3 py-2 z-[60] pointer-events-none max-w-xs shadow-xl font-hei leading-relaxed"></div>
+
+  <!-- 模态框（新增将领 / 我的将领） -->
+  <div id="modal-mask" class="hidden fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+    <div class="bg-parchment-card rounded-xl shadow-2xl w-full max-w-2xl max-h-[88vh] flex flex-col border border-amber-700/30">
+      <div class="flex items-center px-5 py-3 border-b hairline bg-gradient-to-r from-stone-100 to-parchment-dark rounded-t-xl shrink-0">
+        <h2 id="modal-title" class="font-bold text-lg text-ink font-serif">新增将领</h2>
+        <button id="modal-close" class="ml-auto w-8 h-8 flex items-center justify-center rounded-full text-ink-faint hover:bg-stone-200 hover:text-ink text-2xl leading-none transition">&times;</button>
+      </div>
+      <div id="modal-body" class="p-5 overflow-y-auto font-hei text-sm"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[80] px-4 py-2.5 rounded-lg text-sm font-hei shadow-xl"></div>
 
   <script src="data/generals.js"></script>
   <script src="data/battles.js"></script>
