@@ -1,47 +1,19 @@
-/* 近现代国共将领交互式历史年表 — 应用逻辑 v4 */
+/* 近现代国共将领交互式历史年表 — 应用逻辑 v5（地图版） */
 (() => {
 'use strict';
 
 // ---------- 数据装载 ----------
-const PUBLIC_GENERALS = window.DATA_GENERALS || [];   // 公共库（所有人可见，写死）
+const GENERALS = window.DATA_GENERALS || [];
 const BATTLES  = window.DATA_BATTLES  || [];
 const EVENTS   = window.DATA_EVENTS   || [];
 const BATTLE_MAP = Object.fromEntries(BATTLES.map(b => [b.id, b]));
 const EVENT_MAP  = Object.fromEntries(EVENTS.map(e => [e.id, e]));
+const GEN_MAP    = Object.fromEntries(GENERALS.map(g => [g.id, g]));
 const NODE_MAP   = { ...BATTLE_MAP, ...EVENT_MAP };
-
-// 合并公共库 + 本地用户自建将领（localStorage）
-const LS_KEY = 'userGenerals.v1';
-let USER_GENERALS = [];      // 用户自建（本地）
-let GENERALS = [];           // 合并后的全部
-let GEN_MAP = {};
-
-function loadUserGenerals() {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    USER_GENERALS = raw ? JSON.parse(raw) : [];
-    if (!Array.isArray(USER_GENERALS)) USER_GENERALS = [];
-  } catch (e) { USER_GENERALS = []; }
-  USER_GENERALS.forEach(g => { g._user = true; });
-}
-function saveUserGenerals() {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(USER_GENERALS)); } catch (e) {}
-}
-function rebuildData() {
-  GENERALS = [...PUBLIC_GENERALS, ...USER_GENERALS];
-  GEN_MAP = Object.fromEntries(GENERALS.map(g => [g.id, g]));
-  recomputeAxis();
-}
 
 const CAMP_LABEL = { kmt: '国民党', ccp: '共产党' };
 const CAMP_COLOR = { kmt: '#1d4ed8', ccp: '#b91c1c' };
 const CAMP_DEEP  = { kmt: '#1e3a8a', ccp: '#7f1d1d' };
-
-// 军衔准入门槛（少将及以上）——按阵营分别定义可选军衔
-const RANK_OPTIONS = {
-  kmt: ['少将', '中将', '二级上将', '一级上将', '特级上将'],
-  ccp: ['少将', '中将', '上将', '大将', '元帅']
-};
 
 // 历史阶段（用于时期按钮 + 背景色带）
 const ERAS = [
@@ -72,18 +44,15 @@ function midDate(a, b) {
   return (ya + yb) / 2;
 }
 
-// 时间轴范围（合并用户数据后需重算）
-let AXIS_MIN = 1882, AXIS_MAX = 2001, AXIS_W = 0;
+const ALL_YEARS = GENERALS.flatMap(g => [toYear(g.lifeSpan.start), toYear(g.lifeSpan.end)]).filter(Boolean);
+const AXIS_MIN = Math.min(...ALL_YEARS, 1882);
+const AXIS_MAX = Math.max(...ALL_YEARS, 2001);
 const PX_PER_YEAR = 9;
 const LABEL_W = 96;                       // 左侧姓名固定列宽
+const AXIS_W = LABEL_W + (AXIS_MAX - AXIS_MIN) * PX_PER_YEAR + 30;
 const ROW_H = 34;
-function recomputeAxis() {
-  const ys = GENERALS.flatMap(g => [toYear(g.lifeSpan?.start), toYear(g.lifeSpan?.end)]).filter(Boolean);
-  AXIS_MIN = Math.min(...ys, 1882);
-  AXIS_MAX = Math.max(...ys, 2001);
-  AXIS_W = LABEL_W + (AXIS_MAX - AXIS_MIN) * PX_PER_YEAR + 30;
-}
 const xOf = y => LABEL_W + (y - AXIS_MIN) * PX_PER_YEAR;
+
 
 
 // ---------- 状态 ----------
@@ -215,7 +184,7 @@ function renderTracks() {
     const name = document.createElement('div');
     name.className = `track-name absolute font-hei text-xs font-semibold whitespace-nowrap cursor-pointer flex items-center ${dimmed ? 'name-dim' : ''}`;
     name.style.cssText = `left:0; width:${LABEL_W}px; top:${top}px; height:16px; padding-left:12px; color:${deep}`;
-    name.innerHTML = `${g.name}${g._user ? '<span class="ml-0.5 text-[8px] align-top text-emerald-600">✎</span>' : ''}<span class="ml-1 text-[9px] font-normal opacity-60">${(g.rank||'').replace('中华人民共和国','').replace('中国人民解放军','')}</span>`;
+    name.innerHTML = `${g.name}<span class="ml-1 text-[9px] font-normal opacity-60">${(g.rank||'').replace('中华人民共和国','').replace('中国人民解放军','')}</span>`;
     name.dataset.gid = g.id;
     tracks.appendChild(name);
 
@@ -340,6 +309,92 @@ function renderPromotion(g, color) {
   }).join('') + `</div>`;
 }
 
+// 视角四：征战地图 —— 出生地 + 历次战役/事件地点，按时间连线并可动画
+function generalMapPoints(g) {
+  const M = window.CNMap;
+  const pts = [];
+  // 出生地
+  const bp = g.birthplace;
+  if (bp) {
+    let lng = bp.lng, lat = bp.lat;
+    if (lng == null && bp.province && M.PROVINCE_CENTER[bp.province]) { [lng, lat] = M.PROVINCE_CENTER[bp.province]; }
+    if (lng != null) pts.push({ kind: 'birth', name: '出生地', text: bp.text || bp.province, lng, lat, year: toYear(g.birthDate) });
+  }
+  // 战役 + 事件（按时间）
+  const nodes = [...(g.battles || []), ...(g.relatedEvents || [])]
+    .map(id => NODE_MAP[id]).filter(n => n && n.location && n.location.lng != null)
+    .sort((a, b) => (toYear(a.start) || 0) - (toYear(b.start) || 0));
+  nodes.forEach(n => pts.push({ kind: 'battle', name: n.name, text: n.location.text, lng: n.location.lng, lat: n.location.lat, year: toYear(n.start), id: n.id }));
+  return pts;
+}
+
+function renderGeneralMapCard(g, color) {
+  const M = window.CNMap;
+  if (!M) return '<p class="text-ink-faint font-hei">地图模块未加载</p>';
+  const pts = generalMapPoints(g);
+  if (pts.length < 1) return '<p class="text-ink-faint font-hei">该将领暂无可定位的地点信息</p>';
+  const deep = CAMP_DEEP[g.camp];
+  const base = M.baseSvg();
+
+  // 连线路径（出生地→各战役，按时间）
+  const xy = pts.map(p => M.project(p.lng, p.lat));
+  let pathD = '';
+  if (xy.length > 1) pathD = xy.map((c, i) => (i === 0 ? 'M' : 'L') + c[0] + ',' + c[1]).join(' ');
+
+  const dots = pts.map((p, i) => {
+    const [x, y] = xy[i];
+    const isBirth = p.kind === 'birth';
+    const col = isBirth ? '#0891b2' : color;
+    const r = isBirth ? 7 : 6;
+    return `<g class="gen-pt opacity-0" data-i="${i}">
+      <circle cx="${x}" cy="${y}" r="${r}" fill="${col}" stroke="#fff" stroke-width="2"/>
+      <text x="${x}" y="${y - r - 4}" text-anchor="middle" font-size="11" font-weight="700" fill="#44403c" style="paint-order:stroke;stroke:#f5f1e8;stroke-width:3">${isBirth ? '★' + (p.text || '') : p.text || p.name}</text>
+      ${p.year ? `<text x="${x}" y="${y + r + 13}" text-anchor="middle" font-size="9.5" fill="#78716c" style="paint-order:stroke;stroke:#f5f1e8;stroke-width:2.5">${p.year}</text>` : ''}
+    </g>`;
+  }).join('');
+
+  return `
+    <div>
+      <div class="flex items-center gap-3 mb-3 flex-wrap">
+        <p class="text-xs text-ink-faint font-hei flex-1">从出生地（★）出发，按时间顺序连出该将领的征战足迹。</p>
+        ${pts.length > 1 ? `<button id="gen-play" class="text-xs bg-amber-600 text-white px-3 py-1 rounded-md hover:bg-amber-500">▶ 播放轨迹（${pts.length} 处）</button>` : ''}
+        <span id="gen-map-cap" class="text-xs text-ink-faint italic"></span>
+      </div>
+      <div class="rounded-lg overflow-hidden border hairline" style="background:linear-gradient(#f0ead9,#e8e0cd)">
+        <svg viewBox="${base.viewBox}" class="w-full" style="max-height:52vh">
+          <path d="${base.outline}" fill="#fdfbf6" stroke="#c4b696" stroke-width="1.5" opacity="0.9"/>
+          ${base.grid}
+          ${pathD ? `<path id="gen-route" d="${pathD}" fill="none" stroke="${deep}" stroke-width="2" stroke-dasharray="5 4" opacity="0.55"/>` : ''}
+          ${dots}
+        </svg>
+      </div>
+      <p class="text-[11px] text-ink-faint mt-2">底图为简化示意（非精确国界）。★ 蓝点为出生地，${g.camp === 'kmt' ? '蓝' : '红'}点为参与战役/事件发生地，虚线为时间顺序连线。</p>
+    </div>`;
+}
+
+function bindGeneralMap(g) {
+  const pts = document.querySelectorAll('#panel-body .gen-pt');
+  if (!pts.length) return;
+  const cap = document.getElementById('gen-map-cap');
+  const data = generalMapPoints(g);
+  const showAll = () => pts.forEach(p => { p.classList.remove('opacity-0'); p.style.transition = 'opacity .5s'; });
+  showAll();
+  const btn = document.getElementById('gen-play');
+  if (btn) btn.onclick = () => {
+    pts.forEach(p => p.classList.add('opacity-0'));
+    let i = 0;
+    const step = () => {
+      if (i >= pts.length) { if (cap) cap.textContent = '轨迹播放结束'; return; }
+      pts[i].classList.remove('opacity-0');
+      const d = data[i];
+      if (cap) cap.textContent = `${d.year || ''} ${d.kind === 'birth' ? '出生 · ' : ''}${d.text || d.name}`;
+      i++;
+      setTimeout(step, 850);
+    };
+    step();
+  };
+}
+
 function openGeneral(id) {
   const g = GEN_MAP[id]; if (!g) return;
   state.highlightBattle = null; clearHighlight();
@@ -348,7 +403,6 @@ function openGeneral(id) {
   const color = CAMP_COLOR[g.camp], deep = CAMP_DEEP[g.camp];
   document.getElementById('panel-title').innerHTML =
     `${g.name} <span class="text-xs font-normal px-2 py-0.5 rounded ml-1 text-white align-middle" style="background:${deep}">${CAMP_LABEL[g.camp]} · ${g.rank}</span>` +
-    (g._user ? `<span class="text-xs font-normal px-2 py-0.5 rounded ml-1 bg-emerald-100 text-emerald-700 align-middle">✎ 自建（本地）</span>` : '') +
     (g.aliases?.length ? `<span class="text-xs text-ink-faint ml-2 font-normal">${g.aliases.join(' · ')}</span>` : '');
 
   const posList = (g.keyPositions || []).map(p =>
@@ -374,7 +428,8 @@ function openGeneral(id) {
   const TABS = [
     { key: 'life', label: '📜 生平阶段' },
     { key: 'battle', label: '⚔ 战役脉络' },
-    { key: 'promotion', label: '📈 职务升迁' }
+    { key: 'promotion', label: '📈 职务升迁' },
+    { key: 'map', label: '🗺 征战地图' }
   ];
   const tabBar = `<div class="flex items-center gap-5 border-b hairline mb-4">
     ${TABS.map(t => `<button class="doc-tab pb-2 text-sm font-hei ${state.docTab === t.key ? 'active' : ''}" data-tab="${t.key}">${t.label}</button>`).join('')}</div>`;
@@ -384,9 +439,11 @@ function openGeneral(id) {
     tabContent = `<p class="text-[13px] text-ink-soft font-hei leading-relaxed mb-4 pb-3 border-b border-dashed hairline">${g.earlyExperience || ''}</p>${renderJourney(g, color)}`;
   } else if (state.docTab === 'battle') {
     tabContent = `<p class="text-xs text-ink-faint font-hei mb-3">按时间顺序展开该将领亲历的战役与历史事件，点击可查看该战全部参战将领。</p>${renderBattleTrack(g, color)}`;
-  } else {
+  } else if (state.docTab === 'promotion') {
     tabContent = `<p class="text-xs text-ink-faint font-hei mb-3">历任核心职务的时间跨度对比（横条越长表示任职时间越久）。</p>${renderPromotion(g, color)}
       <div class="mt-4 pt-3 border-t border-dashed hairline"><ul class="space-y-1 text-[13px] font-hei text-ink-soft">${posList || '—'}</ul></div>`;
+  } else {
+    tabContent = renderGeneralMapCard(g, color);
   }
 
   document.getElementById('panel-body').innerHTML = `
@@ -399,6 +456,7 @@ function openGeneral(id) {
         </section>
       </div>
     </div>`;
+  if (state.docTab === 'map') bindGeneralMap(g);
   showPanel();
 }
 
@@ -660,246 +718,6 @@ function resetAll() {
   renderEraTabs(); renderTracks(); bindTrackEvents();
 }
 
-// =========================================================
-//  新增将领 / 我的将领（本地 localStorage）
-// =========================================================
-function toast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-[80] px-4 py-2.5 rounded-lg text-sm font-hei shadow-xl ' +
-    (type === 'error' ? 'bg-rose-600 text-white' : 'bg-emerald-700 text-white');
-  t.classList.remove('hidden');
-  clearTimeout(toast._t);
-  toast._t = setTimeout(() => t.classList.add('hidden'), 2600);
-}
-function showModal() { document.getElementById('modal-mask').classList.remove('hidden'); }
-function hideModal() { document.getElementById('modal-mask').classList.add('hidden'); }
-
-// 刷新全部视图（新增/删除后调用）
-function refreshAll() {
-  rebuildData();
-  buildFilters();
-  renderAxis();
-  renderTracks(); bindTrackEvents();
-  if (state.mode === 'war') { document.getElementById('war-select').removeAttribute('data-built'); buildWarSelect(); renderWarView(); }
-  updateMyCount();
-}
-function updateMyCount() {
-  document.getElementById('myCount').textContent = USER_GENERALS.length;
-}
-
-function bindAddGeneral() {
-  updateMyCount();
-  document.getElementById('addBtn').onclick = openAddModal;
-  document.getElementById('myBtn').onclick = openMyModal;
-  document.getElementById('modal-close').onclick = hideModal;
-  document.getElementById('modal-mask').addEventListener('click', (e) => {
-    if (e.target.id === 'modal-mask') hideModal();
-  });
-}
-
-// 战役/事件多选清单
-function battleCheckList() {
-  const nodes = [...BATTLES.filter(b => !b.belongsTo), ...EVENTS].sort((a, b) => (toYear(a.start) || 0) - (toYear(b.start) || 0));
-  return nodes.map(n =>
-    `<label class="flex items-center gap-1.5 cursor-pointer hover:bg-parchment-dark rounded px-1.5 py-0.5 text-[12px]">
-      <input type="checkbox" class="f-battle accent-amber-600 w-3.5 h-3.5" value="${n.id}">
-      <span>${n.name}<span class="text-ink-faint text-[10px]">·${toYear(n.start)}</span></span>
-    </label>`).join('');
-}
-
-function rankSelectHtml(camp) {
-  return RANK_OPTIONS[camp].map(r => `<option value="${r}">${r}</option>`).join('');
-}
-
-function openAddModal() {
-  document.getElementById('modal-title').textContent = '＋ 新增将领（本地保存）';
-  const L = (label, inner, hint) => `<div class="mb-3"><label class="block text-xs font-bold text-ink-soft mb-1">${label}${hint?`<span class="font-normal text-ink-faint ml-1">${hint}</span>`:''}</label>${inner}</div>`;
-  const ipt = (id, ph, req) => `<input id="f-${id}" placeholder="${ph||''}" class="w-full border hairline rounded px-2.5 py-1.5 text-sm focus:ring-2 focus:ring-amber-400 outline-none ${req?'':''}">`;
-  const ta = (id, ph) => `<textarea id="f-${id}" placeholder="${ph||''}" rows="2" class="w-full border hairline rounded px-2.5 py-1.5 text-sm focus:ring-2 focus:ring-amber-400 outline-none"></textarea>`;
-
-  document.getElementById('modal-body').innerHTML = `
-    <div class="mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200 text-[12px] text-amber-800 leading-relaxed">
-      ⚠ <b>准入限制</b>：仅支持录入<b>少将及以上</b>军衔的国共将领；军衔从下拉选择，不在范围内无法保存。<br>
-      💾 <b>数据说明</b>：新增将领仅保存在<b>你当前浏览器</b>，刷新/重开仍在，但换设备或清缓存会丢失，也不会同步给他人。公共的 30 位将领所有人可见。
-    </div>
-    <div class="grid grid-cols-2 gap-x-4">
-      ${L('阵营 *', `<select id="f-camp" class="w-full border hairline rounded px-2.5 py-1.5 text-sm outline-none"><option value="kmt">国民党</option><option value="ccp">共产党</option></select>`)}
-      ${L('军衔 *', `<select id="f-rank" class="w-full border hairline rounded px-2.5 py-1.5 text-sm outline-none">${rankSelectHtml('kmt')}</select>`, '少将及以上')}
-      ${L('姓名 *', ipt('name', '如：孙立人'))}
-      ${L('字 / 别名', ipt('aliases', '多个用、分隔'))}
-      ${L('性别', `<select id="f-gender" class="w-full border hairline rounded px-2.5 py-1.5 text-sm outline-none"><option value="male">男</option><option value="female">女</option></select>`)}
-      ${L('籍贯省份', ipt('province', '如：安徽'))}
-      ${L('出生地', ipt('birthplace', '如：安徽庐江'))}
-      ${L('毕业院校', ipt('academy', '多个用、分隔'))}
-      ${L('出生日期 *', ipt('birthDate', 'YYYY-MM-DD 或 YYYY'), '至少填年份')}
-      ${L('逝世日期', ipt('deathDate', 'YYYY-MM-DD 或 YYYY'))}
-      ${L('活跃起始年 *', ipt('activeStart', '如：1924'), '轨迹条起点')}
-      ${L('活跃结束年 *', ipt('activeEnd', '如：1949'), '轨迹条终点')}
-    </div>
-    ${L('安葬地点', ipt('burial'))}
-    ${L('早期经历', ta('early'))}
-    ${L('重大历史行动', ta('actions', '多条用；分隔'))}
-    ${L('最终历史结局', ta('outcome'))}
-    ${L('历史简要评价', ta('evaluation'))}
-    ${L('史料出处', ipt('sources', '多个用；分隔，建议填写权威史料'))}
-    ${L('参与战役 / 事件', `<div class="grid grid-cols-3 gap-x-2 max-h-32 overflow-y-auto border hairline rounded p-2">${battleCheckList()}</div>`)}
-    <div class="mt-4 mb-1">
-      <label class="block text-xs font-bold text-ink-soft mb-1">历任核心职务 <span class="font-normal text-ink-faint">（成长轨迹将据此生成）</span></label>
-      <div id="pos-rows" class="space-y-2"></div>
-      <button id="add-pos" class="mt-2 text-xs text-emerald-700 hover:underline">＋ 添加一条职务</button>
-    </div>
-    <div class="flex gap-3 mt-5 pt-4 border-t hairline">
-      <button id="save-gen" class="flex-1 bg-emerald-700 text-white py-2.5 rounded-lg hover:bg-emerald-600 font-medium">保存将领</button>
-      <button id="cancel-gen" class="px-5 py-2.5 rounded-lg border hairline hover:bg-stone-50">取消</button>
-    </div>`;
-
-  // 阵营切换 → 军衔选项联动
-  document.getElementById('f-camp').onchange = (e) => {
-    document.getElementById('f-rank').innerHTML = rankSelectHtml(e.target.value);
-  };
-  // 职务动态行
-  const posRows = document.getElementById('pos-rows');
-  const addPosRow = (t = '', s = '', en = '') => {
-    const row = document.createElement('div');
-    row.className = 'pos-row flex gap-2 items-center';
-    row.innerHTML = `
-      <input class="p-title flex-1 border hairline rounded px-2 py-1 text-xs" placeholder="职务名称" value="${t}">
-      <input class="p-start w-16 border hairline rounded px-2 py-1 text-xs" placeholder="起年" value="${s}">
-      <input class="p-end w-16 border hairline rounded px-2 py-1 text-xs" placeholder="止年" value="${en}">
-      <button class="p-del text-rose-500 hover:text-rose-700 px-1 text-lg leading-none">&times;</button>`;
-    row.querySelector('.p-del').onclick = () => row.remove();
-    posRows.appendChild(row);
-  };
-  addPosRow();
-  document.getElementById('add-pos').onclick = () => addPosRow();
-
-  document.getElementById('cancel-gen').onclick = hideModal;
-  document.getElementById('save-gen').onclick = collectAndSaveGeneral;
-  showModal();
-}
-
-function collectAndSaveGeneral() {
-  const val = id => (document.getElementById('f-' + id)?.value || '').trim();
-  const camp = val('camp');
-  const rank = val('rank');
-  const name = val('name');
-
-  // 校验：必填
-  if (!name) return toast('请填写姓名', 'error');
-  if (!val('birthDate')) return toast('请填写出生日期（至少年份）', 'error');
-  if (!val('activeStart') || !val('activeEnd')) return toast('请填写活跃起止年（时间轴轨迹所需）', 'error');
-
-  // 校验：军衔门槛（双保险，虽然下拉已限制）
-  if (!RANK_OPTIONS[camp] || !RANK_OPTIONS[camp].includes(rank)) {
-    return toast('军衔不符合准入要求：仅限少将及以上', 'error');
-  }
-  // 校验：重名
-  const nm = name;
-  if (GENERALS.some(g => g.name === nm)) return toast('已存在同名将领：' + nm, 'error');
-
-  // 收集战役勾选
-  const battles = [...document.querySelectorAll('.f-battle:checked')].map(c => c.value)
-    .filter(id => BATTLE_MAP[id]);
-  const relatedEvents = [...document.querySelectorAll('.f-battle:checked')].map(c => c.value)
-    .filter(id => EVENT_MAP[id]);
-
-  // 收集职务 → 同时生成 journey
-  const positions = [...document.querySelectorAll('.pos-row')].map(r => ({
-    title: r.querySelector('.p-title').value.trim(),
-    start: r.querySelector('.p-start').value.trim(),
-    end: r.querySelector('.p-end').value.trim()
-  })).filter(p => p.title);
-  const journey = positions
-    .filter(p => p.start)
-    .sort((a, b) => (parseInt(a.start) || 0) - (parseInt(b.start) || 0))
-    .map(p => ({ year: p.start, age: null, era: '自建', title: p.title, detail: `任${p.title}。` }));
-
-  const splitList = s => s ? s.split(/[、,；;]/).map(x => x.trim()).filter(Boolean) : [];
-  const bd = val('birthDate'), dd = val('deathDate');
-  const as = val('activeStart'), ae = val('activeEnd');
-
-  const g = {
-    id: 'user-' + Date.now().toString(36) + '-' + Math.floor(performance.now()).toString(36),
-    name: nm,
-    aliases: splitList(val('aliases')),
-    camp, rank,
-    _user: true,
-    gender: val('gender') || 'male',
-    birthplace: { text: val('birthplace') || val('province') || '—', province: val('province') || '未知' },
-    birthDate: bd,
-    deathDate: dd || '',
-    datePrecision: { birth: bd.length > 4 ? 'day' : 'year', death: dd.length > 4 ? 'day' : (dd ? 'year' : 'year') },
-    burialPlace: val('burial') || '—',
-    academy: splitList(val('academy')),
-    earlyExperience: val('early') || '',
-    keyPositions: positions,
-    journey,
-    battles, relatedEvents,
-    majorActions: splitList(val('actions')),
-    finalOutcome: val('outcome') || '',
-    evaluation: val('evaluation') || '',
-    lifeSpan: { start: bd, end: dd || (as ? String(parseInt(as) + 1) : bd) },
-    activeSpan: { start: as, end: ae },
-    era: ['自建'],
-    sources: splitList(val('sources'))
-  };
-
-  USER_GENERALS.push(g);
-  saveUserGenerals();
-  refreshAll();
-  hideModal();
-  toast('已新增：' + nm + '（保存在本地浏览器）');
-  setTimeout(() => openGeneral(g.id), 150);
-}
-
-function openMyModal() {
-  document.getElementById('modal-title').textContent = '我的将领（本地自建）';
-  if (!USER_GENERALS.length) {
-    document.getElementById('modal-body').innerHTML = `
-      <div class="text-center py-10 text-ink-faint">
-        <p class="mb-3">你还没有自建将领。</p>
-        <button id="goadd" class="bg-emerald-700 text-white px-4 py-2 rounded-lg hover:bg-emerald-600">＋ 立即新增</button>
-      </div>`;
-    document.getElementById('goadd').onclick = openAddModal;
-    showModal(); return;
-  }
-  document.getElementById('modal-body').innerHTML = `
-    <div class="mb-3 text-[12px] text-ink-faint">共 ${USER_GENERALS.length} 位自建将领，仅保存在本浏览器。</div>
-    <div class="space-y-2">
-      ${USER_GENERALS.map(g => `
-        <div class="flex items-center gap-3 card rounded-lg p-3">
-          <span class="w-3 h-3 rounded-sm shrink-0" style="background:${CAMP_COLOR[g.camp]}"></span>
-          <div class="flex-1 min-w-0">
-            <div class="font-bold text-ink">${g.name} <span class="text-xs font-normal text-ink-faint">${CAMP_LABEL[g.camp]} · ${g.rank}</span></div>
-            <div class="text-[11px] text-ink-faint truncate">${g.activeSpan.start}–${g.activeSpan.end} · ${(g.academy||[]).join('、')||'—'}</div>
-          </div>
-          <button class="view-my text-xs text-blue-700 hover:underline shrink-0" data-gid="${g.id}">查看</button>
-          <button class="del-my text-xs text-rose-600 hover:underline shrink-0" data-gid="${g.id}">删除</button>
-        </div>`).join('')}
-    </div>
-    <button id="goadd2" class="mt-4 w-full bg-emerald-700 text-white py-2 rounded-lg hover:bg-emerald-600">＋ 继续新增</button>`;
-  document.getElementById('goadd2').onclick = openAddModal;
-  document.getElementById('modal-body').querySelectorAll('.view-my').forEach(b => {
-    b.onclick = () => { hideModal(); openGeneral(b.dataset.gid); };
-  });
-  document.getElementById('modal-body').querySelectorAll('.del-my').forEach(b => {
-    b.onclick = () => deleteUserGeneral(b.dataset.gid);
-  });
-  showModal();
-}
-
-function deleteUserGeneral(id) {
-  const g = GEN_MAP[id];
-  if (!g || !g._user) return;
-  if (!confirm(`确定删除自建将领「${g.name}」？此操作不可撤销。`)) return;
-  USER_GENERALS = USER_GENERALS.filter(x => x.id !== id);
-  saveUserGenerals();
-  refreshAll();
-  state.selected.delete(id);
-  openMyModal();
-  toast('已删除：' + g.name);
-}
 
 function setMode(mode) {
   state.mode = mode;
@@ -986,15 +804,95 @@ function renderWarView() {
         ${timelineHtml}
         <div class="text-[11px] text-ink-faint mt-3">史料出处：${(n.sources || []).join('；')}</div>
       </div>
+      ${renderWarMapCard(n)}
       <div class="flex flex-col md:flex-row gap-6">${camp('kmt')}${camp('ccp')}</div>
       <p class="text-center text-xs text-ink-faint">点击任一将领卡片可跳转其完整档案</p>
     </div>`;
+
+  bindWarMap(n);
+}
+
+// 战争模式地图卡片：发生地 + 下辖战斗按时间点亮
+function warMapPoints(n) {
+  // 主战役地点 + 各参战将领在该战的相关地（用战役自身坐标）+ 下辖战斗地点
+  const pts = [];
+  if (n.location && n.location.lng != null) {
+    pts.push({ name: n.name, lng: n.location.lng, lat: n.location.lat, year: toYear(n.start), main: true, text: n.location.text });
+  }
+  BATTLES.filter(b => b.belongsTo === n.id).forEach(b => {
+    if (b.location && b.location.lng != null)
+      pts.push({ name: b.name, lng: b.location.lng, lat: b.location.lat, year: toYear(b.start), text: b.location.text });
+  });
+  // 去重（同坐标）
+  const seen = new Set();
+  return pts.filter(p => { const k = p.lng + ',' + p.lat; if (seen.has(k)) return false; seen.add(k); return true; })
+    .sort((a, b) => (a.year || 0) - (b.year || 0));
+}
+
+function renderWarMapCard(n) {
+  const M = window.CNMap;
+  if (!M) return '';
+  const pts = warMapPoints(n);
+  if (!pts.length) return '';
+  const base = M.baseSvg();
+  const dots = pts.map((p, i) => {
+    const [x, y] = M.project(p.lng, p.lat);
+    const r = p.main ? 9 : 6;
+    const col = p.main ? '#b45309' : '#78716c';
+    return `<g class="war-pt opacity-0" data-i="${i}">
+      <circle cx="${x}" cy="${y}" r="${r + 6}" fill="${col}" opacity="0.18"><animate attributeName="r" values="${r};${r + 8};${r}" dur="1.8s" repeatCount="indefinite"/></circle>
+      <circle cx="${x}" cy="${y}" r="${r}" fill="${col}" stroke="#fff" stroke-width="2"/>
+      <text x="${x}" y="${y - r - 5}" text-anchor="middle" font-size="12" font-weight="700" fill="#44403c" style="paint-order:stroke;stroke:#f5f1e8;stroke-width:3">${p.text || p.name}</text>
+      ${p.year ? `<text x="${x}" y="${y + r + 14}" text-anchor="middle" font-size="10" fill="#78716c" style="paint-order:stroke;stroke:#f5f1e8;stroke-width:2.5">${p.year}</text>` : ''}
+    </g>`;
+  }).join('');
+
+  return `
+    <div class="card rounded-xl p-5">
+      <div class="flex items-center gap-3 mb-3 flex-wrap">
+        <h3 class="font-hei font-bold text-ink-soft text-sm">🗺 战役地理位置${pts.length > 1 ? ' · 战事演进' : ''}</h3>
+        ${pts.length > 1 ? `<button id="war-play" class="text-xs bg-amber-600 text-white px-3 py-1 rounded-md hover:bg-amber-500">▶ 播放演进（${pts.length} 处）</button>` : ''}
+        <span id="war-map-cap" class="text-xs text-ink-faint italic"></span>
+      </div>
+      <div class="rounded-lg overflow-hidden border hairline" style="background:linear-gradient(#f0ead9,#e8e0cd)">
+        <svg viewBox="${base.viewBox}" class="w-full" style="max-height:52vh">
+          <path d="${base.outline}" fill="#fdfbf6" stroke="#c4b696" stroke-width="1.5" opacity="0.9"/>
+          ${base.grid}
+          ${dots}
+        </svg>
+      </div>
+      <p class="text-[11px] text-ink-faint mt-2">底图为简化示意（非精确国界），红点为主战场，灰点为下辖 / 相关战斗，按发生时间先后点亮。</p>
+    </div>`;
+}
+
+function bindWarMap(n) {
+  const pts = document.querySelectorAll('#view-war .war-pt');
+  if (!pts.length) return;
+  const cap = document.getElementById('war-map-cap');
+  const ptsData = warMapPoints(n);
+  // 默认全部显示
+  const showAll = () => pts.forEach(p => p.classList.remove('opacity-0'));
+  const play = () => {
+    pts.forEach(p => p.classList.add('opacity-0'));
+    let i = 0;
+    const step = () => {
+      if (i >= pts.length) { if (cap) cap.textContent = '演进结束'; return; }
+      pts[i].classList.remove('opacity-0');
+      pts[i].style.transition = 'opacity .5s';
+      const d = ptsData[i];
+      if (cap) cap.textContent = `${d.year || ''} ${d.text || d.name}`;
+      i++;
+      setTimeout(step, 900);
+    };
+    step();
+  };
+  const btn = document.getElementById('war-play');
+  if (btn) btn.onclick = play;
+  showAll();  // 初始全显，点播放才逐个演进
 }
 
 // ---------- 启动 ----------
 function init() {
-  loadUserGenerals();
-  rebuildData();
   if (!GENERALS.length) { document.getElementById('tracks').innerHTML = '<p class="p-4 text-red-600 font-hei">数据加载失败</p>'; return; }
   renderAxis();
   renderEraTabs();
@@ -1002,7 +900,6 @@ function init() {
   renderTracks();
   bindTrackEvents();
   bindGlobalEvents();
-  bindAddGeneral();
 
   // 战争视图内的点击委托（将领跳档案 / 相关战斗切换）
   document.getElementById('view-war').addEventListener('click', (e) => {
