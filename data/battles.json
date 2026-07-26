@@ -6,21 +6,93 @@
     "category": "土地革命战争",
     "start": "1927-08-01",
     "end": "1927-08-01",
-    "location": { "text": "江西南昌", "province": "江西", "lng": 115.86, "lat": 28.68 },
+    "location": {
+      "text": "江西南昌",
+      "province": "江西",
+      "lng": 115.86,
+      "lat": 28.68
+    },
     "participants": [
-      { "generalId": "zhu-de", "camp": "ccp", "role": "起义军第九军副军长" },
-      { "generalId": "he-long", "camp": "ccp", "role": "起义军总指挥、第二十军军长" },
-      { "generalId": "liu-bocheng", "camp": "ccp", "role": "起义军参谋团参谋长" },
-      { "generalId": "ye-jianying", "camp": "ccp", "role": "参与起义策划（时任第四军参谋长）" },
-      { "generalId": "chen-yi", "camp": "ccp", "role": "起义军第二十五师团指导员" },
-      { "generalId": "nie-rongzhen", "camp": "ccp", "role": "前敌军委书记" },
-      { "generalId": "lin-biao", "camp": "ccp", "role": "起义军连长" },
-      { "generalId": "chen-geng", "camp": "ccp", "role": "起义军营长" },
-      { "generalId": "su-yu", "camp": "ccp", "role": "起义军警卫队班长" }
+      {
+        "generalId": "zhu-de",
+        "camp": "ccp",
+        "role": "起义军第九军副军长"
+      },
+      {
+        "generalId": "he-long",
+        "camp": "ccp",
+        "role": "起义军总指挥、第二十军军长"
+      },
+      {
+        "generalId": "liu-bocheng",
+        "camp": "ccp",
+        "role": "起义军参谋团参谋长"
+      },
+      {
+        "generalId": "ye-jianying",
+        "camp": "ccp",
+        "role": "参与起义策划（时任第四军参谋长）"
+      },
+      {
+        "generalId": "chen-yi",
+        "camp": "ccp",
+        "role": "起义军第二十五师团指导员"
+      },
+      {
+        "generalId": "nie-rongzhen",
+        "camp": "ccp",
+        "role": "前敌军委书记"
+      },
+      {
+        "generalId": "lin-biao",
+        "camp": "ccp",
+        "role": "起义军连长"
+      },
+      {
+        "generalId": "chen-geng",
+        "camp": "ccp",
+        "role": "起义军营长"
+      },
+      {
+        "generalId": "su-yu",
+        "camp": "ccp",
+        "role": "起义军警卫队班长"
+      }
     ],
     "outcome": "打响武装反抗国民党反动派的第一枪，人民军队诞生",
     "summary": "中国共产党领导发动南昌起义，打响武装反抗国民党反动派的第一枪，是中国共产党独立领导武装斗争和创建人民军队的开端。8月1日后被定为中国人民解放军建军节。",
-    "sources": ["《中国人民解放军战史》（军事科学院）", "《中国共产党历史》第一卷"]
+    "sources": [
+      "《中国人民解放军战史》（军事科学院）",
+      "《中国共产党历史》第一卷"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "ccp",
+          "kind": "advance",
+          "label": "起义军南下广东",
+          "pts": [
+            {
+              "lng": 115.86,
+              "lat": 28.68,
+              "name": "南昌"
+            },
+            {
+              "lng": 116.03,
+              "lat": 25.88,
+              "name": "瑞金"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "victory",
+          "at": "南昌",
+          "label": "打响武装反抗第一枪 建军节"
+        }
+      ]
+    }
   },
   {
     "id": "autumn-harvest-uprising-1927",
@@ -29,13 +101,52 @@
     "category": "土地革命战争",
     "start": "1927-09-09",
     "end": "1927-09-19",
-    "location": { "text": "湘赣边界", "province": "湖南", "lng": 113.90, "lat": 27.63 },
+    "location": {
+      "text": "湘赣边界",
+      "province": "湖南",
+      "lng": 113.9,
+      "lat": 27.63
+    },
     "participants": [
-      { "generalId": "luo-ronghuan", "camp": "ccp", "role": "起义部队特务连党代表" }
+      {
+        "generalId": "luo-ronghuan",
+        "camp": "ccp",
+        "role": "起义部队特务连党代表"
+      }
     ],
     "outcome": "受挫后转向井冈山，开辟农村包围城市道路",
     "summary": "毛泽东领导湘赣边界秋收起义，受挫后率部转向井冈山，开始探索农村包围城市、武装夺取政权的革命道路。",
-    "sources": ["《中国共产党历史》第一卷"]
+    "sources": [
+      "《中国共产党历史》第一卷"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "ccp",
+          "kind": "advance",
+          "label": "受挫后转向井冈山",
+          "pts": [
+            {
+              "lng": 112.94,
+              "lat": 28.23,
+              "name": "长沙"
+            },
+            {
+              "lng": 114.17,
+              "lat": 26.58,
+              "name": "井冈山"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "victory",
+          "at": "井冈山",
+          "label": "开辟农村包围城市道路"
+        }
+      ]
+    }
   },
   {
     "id": "northern-expedition",
@@ -44,19 +155,162 @@
     "category": "北伐战争",
     "start": "1926-07-09",
     "end": "1928-12-29",
-    "location": { "text": "两广至京津", "province": "广东", "lng": 113.27, "lat": 23.13 },
+    "location": {
+      "text": "两广至京津",
+      "province": "广东",
+      "lng": 113.27,
+      "lat": 23.13
+    },
     "participants": [
-      { "generalId": "chiang-kai-shek", "camp": "kmt", "role": "国民革命军总司令" },
-      { "generalId": "li-zongren", "camp": "kmt", "role": "第七军军长" },
-      { "generalId": "bai-chongxi", "camp": "kmt", "role": "东路军前敌总指挥" },
-      { "generalId": "chen-cheng", "camp": "kmt", "role": "第二十一师团长、师长" },
-      { "generalId": "xue-yue", "camp": "kmt", "role": "第一军第一师副师长、师长" },
-      { "generalId": "zhu-de", "camp": "ccp", "role": "国民革命军第三军军官教育团团长" },
-      { "generalId": "ye-jianying", "camp": "ccp", "role": "国民革命军新编第二师师长" }
+      {
+        "generalId": "chiang-kai-shek",
+        "camp": "kmt",
+        "role": "国民革命军总司令"
+      },
+      {
+        "generalId": "li-zongren",
+        "camp": "kmt",
+        "role": "第七军军长"
+      },
+      {
+        "generalId": "bai-chongxi",
+        "camp": "kmt",
+        "role": "东路军前敌总指挥"
+      },
+      {
+        "generalId": "chen-cheng",
+        "camp": "kmt",
+        "role": "第二十一师团长、师长"
+      },
+      {
+        "generalId": "xue-yue",
+        "camp": "kmt",
+        "role": "第一军第一师副师长、师长"
+      },
+      {
+        "generalId": "zhu-de",
+        "camp": "ccp",
+        "role": "国民革命军第三军军官教育团团长"
+      },
+      {
+        "generalId": "ye-jianying",
+        "camp": "ccp",
+        "role": "国民革命军新编第二师师长"
+      }
     ],
     "outcome": "国民革命军占领长江流域，张学良东北易帜，国民政府形式上统一全国",
     "summary": "国民革命军自广东北伐，讨伐北洋军阀吴佩孚、孙传芳、张作霖，至1928年张学良东北易帜完成形式统一。期间国共第一次合作破裂（1927年四一二事件）。",
-    "sources": ["《中华民国史》（李新主编，中华书局）", "《中国国民党史》"]
+    "sources": [
+      "《中华民国史》（李新主编，中华书局）",
+      "《中国国民党史》"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "kmt",
+          "kind": "advance",
+          "label": "中路（湘鄂）：广州→长沙→武汉",
+          "pts": [
+            {
+              "lng": 113.27,
+              "lat": 23.13,
+              "name": "广州"
+            },
+            {
+              "lng": 113.6,
+              "lat": 24.81,
+              "name": "韶关"
+            },
+            {
+              "lng": 112.57,
+              "lat": 26.89,
+              "name": "衡阳"
+            },
+            {
+              "lng": 112.94,
+              "lat": 28.23,
+              "name": "长沙"
+            },
+            {
+              "lng": 114,
+              "lat": 29.85,
+              "name": "汀泗桥"
+            },
+            {
+              "lng": 114.3,
+              "lat": 30.59,
+              "name": "武汉"
+            }
+          ]
+        },
+        {
+          "side": "kmt",
+          "kind": "advance",
+          "label": "东路（赣浙）：→南昌→南京→上海",
+          "pts": [
+            {
+              "lng": 112.94,
+              "lat": 28.23,
+              "name": "长沙"
+            },
+            {
+              "lng": 115.86,
+              "lat": 28.68,
+              "name": "南昌"
+            },
+            {
+              "lng": 116,
+              "lat": 29.71,
+              "name": "九江"
+            },
+            {
+              "lng": 118.79,
+              "lat": 32.06,
+              "name": "南京"
+            },
+            {
+              "lng": 121.47,
+              "lat": 31.23,
+              "name": "上海"
+            }
+          ]
+        },
+        {
+          "side": "enemy",
+          "kind": "retreat",
+          "label": "北洋军阀败退",
+          "pts": [
+            {
+              "lng": 114.3,
+              "lat": 30.59,
+              "name": "武汉"
+            },
+            {
+              "lng": 113.65,
+              "lat": 34.76,
+              "name": "郑州"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "battle",
+          "at": "汀泗桥",
+          "label": "汀泗桥·贺胜桥战役 大破吴佩孚"
+        },
+        {
+          "kind": "victory",
+          "at": "武汉",
+          "label": "攻克武汉三镇"
+        },
+        {
+          "kind": "victory",
+          "at": "南京",
+          "label": "1927 进占南京"
+        }
+      ]
+    }
   },
   {
     "id": "central-plains-war-1930",
@@ -65,17 +319,94 @@
     "category": "军阀混战",
     "start": "1930-05-11",
     "end": "1930-11-04",
-    "location": { "text": "河南、山东、安徽", "province": "河南", "lng": 113.65, "lat": 34.76 },
+    "location": {
+      "text": "河南、山东、安徽",
+      "province": "河南",
+      "lng": 113.65,
+      "lat": 34.76
+    },
     "participants": [
-      { "generalId": "chiang-kai-shek", "camp": "kmt", "role": "南京国民政府讨逆军总司令" },
-      { "generalId": "feng-yuxiang", "camp": "kmt", "role": "反蒋联军（西北军）领袖" },
-      { "generalId": "yan-xishan", "camp": "kmt", "role": "反蒋联军陆海空军总司令（晋军）" },
-      { "generalId": "li-zongren", "camp": "kmt", "role": "反蒋联军（桂军）一方" },
-      { "generalId": "zhang-xueliang", "camp": "kmt", "role": "率东北军入关拥蒋，助蒋获胜" }
+      {
+        "generalId": "chiang-kai-shek",
+        "camp": "kmt",
+        "role": "南京国民政府讨逆军总司令"
+      },
+      {
+        "generalId": "feng-yuxiang",
+        "camp": "kmt",
+        "role": "反蒋联军（西北军）领袖"
+      },
+      {
+        "generalId": "yan-xishan",
+        "camp": "kmt",
+        "role": "反蒋联军陆海空军总司令（晋军）"
+      },
+      {
+        "generalId": "li-zongren",
+        "camp": "kmt",
+        "role": "反蒋联军（桂军）一方"
+      },
+      {
+        "generalId": "zhang-xueliang",
+        "camp": "kmt",
+        "role": "率东北军入关拥蒋，助蒋获胜"
+      }
     ],
     "outcome": "蒋介石获胜，巩固南京政府统治地位",
     "summary": "蒋介石与冯玉祥、阎锡山、李宗仁等反蒋势力之间爆发的大规模军阀混战，以张学良东北军入关助蒋而告终，是民国时期规模最大的军阀战争。",
-    "sources": ["《中华民国史》（中华书局）"]
+    "sources": [
+      "《中华民国史》（中华书局）"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "kmt",
+          "kind": "advance",
+          "label": "蒋军沿津浦、陇海线反击",
+          "pts": [
+            {
+              "lng": 118.79,
+              "lat": 32.06,
+              "name": "南京"
+            },
+            {
+              "lng": 117.28,
+              "lat": 34.26,
+              "name": "徐州"
+            },
+            {
+              "lng": 113.65,
+              "lat": 34.76,
+              "name": "郑州"
+            }
+          ]
+        },
+        {
+          "side": "enemy",
+          "kind": "advance",
+          "label": "反蒋联军（阎冯桂）",
+          "pts": [
+            {
+              "lng": 112.55,
+              "lat": 37.87,
+              "name": "太原"
+            },
+            {
+              "lng": 113.65,
+              "lat": 34.76,
+              "name": "郑州"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "battle",
+          "at": "郑州",
+          "label": "张学良入关助蒋 战事终结"
+        }
+      ]
+    }
   },
   {
     "id": "long-march",
@@ -84,25 +415,128 @@
     "category": "土地革命战争",
     "start": "1934-10-10",
     "end": "1936-10-22",
-    "location": { "text": "江西瑞金至陕北", "province": "江西", "lng": 116.03, "lat": 25.88 },
+    "location": {
+      "text": "江西瑞金至陕北",
+      "province": "江西",
+      "lng": 116.03,
+      "lat": 25.88
+    },
     "participants": [
-      { "generalId": "zhu-de", "camp": "ccp", "role": "中国工农红军总司令" },
-      { "generalId": "peng-dehuai", "camp": "ccp", "role": "红三军团军团长" },
-      { "generalId": "lin-biao", "camp": "ccp", "role": "红一军团军团长" },
-      { "generalId": "liu-bocheng", "camp": "ccp", "role": "红军总参谋长" },
-      { "generalId": "nie-rongzhen", "camp": "ccp", "role": "红一军团政治委员" },
-      { "generalId": "he-long", "camp": "ccp", "role": "红二方面军总指挥" },
-      { "generalId": "xu-xiangqian", "camp": "ccp", "role": "红四方面军总指挥" },
-      { "generalId": "ye-jianying", "camp": "ccp", "role": "红军前敌总指挥部参谋长" },
-      { "generalId": "luo-ronghuan", "camp": "ccp", "role": "红一方面军政治部巡视员" },
-      { "generalId": "chen-geng", "camp": "ccp", "role": "红军干部团团长" },
-      { "generalId": "xu-haidong", "camp": "ccp", "role": "红二十五军军长" },
-      { "generalId": "huang-kecheng", "camp": "ccp", "role": "红三军团第四师政治委员" },
-      { "generalId": "wang-shusheng", "camp": "ccp", "role": "红四方面军副总指挥" }
+      {
+        "generalId": "zhu-de",
+        "camp": "ccp",
+        "role": "中国工农红军总司令"
+      },
+      {
+        "generalId": "peng-dehuai",
+        "camp": "ccp",
+        "role": "红三军团军团长"
+      },
+      {
+        "generalId": "lin-biao",
+        "camp": "ccp",
+        "role": "红一军团军团长"
+      },
+      {
+        "generalId": "liu-bocheng",
+        "camp": "ccp",
+        "role": "红军总参谋长"
+      },
+      {
+        "generalId": "nie-rongzhen",
+        "camp": "ccp",
+        "role": "红一军团政治委员"
+      },
+      {
+        "generalId": "he-long",
+        "camp": "ccp",
+        "role": "红二方面军总指挥"
+      },
+      {
+        "generalId": "xu-xiangqian",
+        "camp": "ccp",
+        "role": "红四方面军总指挥"
+      },
+      {
+        "generalId": "ye-jianying",
+        "camp": "ccp",
+        "role": "红军前敌总指挥部参谋长"
+      },
+      {
+        "generalId": "luo-ronghuan",
+        "camp": "ccp",
+        "role": "红一方面军政治部巡视员"
+      },
+      {
+        "generalId": "chen-geng",
+        "camp": "ccp",
+        "role": "红军干部团团长"
+      },
+      {
+        "generalId": "xu-haidong",
+        "camp": "ccp",
+        "role": "红二十五军军长"
+      },
+      {
+        "generalId": "huang-kecheng",
+        "camp": "ccp",
+        "role": "红三军团第四师政治委员"
+      },
+      {
+        "generalId": "wang-shusheng",
+        "camp": "ccp",
+        "role": "红四方面军副总指挥"
+      }
     ],
     "outcome": "红军三大主力会师陕北，实现战略转移",
     "summary": "中央红军由中央苏区突围，历经湘江战役、遵义会议、四渡赤水、强渡大渡河、翻越雪山草地，1935年10月到达陕北；1936年10月红一、二、四方面军会宁会师，长征结束。",
-    "sources": ["《中国人民解放军战史》（军事科学院）", "《中国共产党历史》第一卷"]
+    "sources": [
+      "《中国人民解放军战史》（军事科学院）",
+      "《中国共产党历史》第一卷"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "ccp",
+          "kind": "advance",
+          "label": "中央红军：瑞金→遵义→会宁→陕北",
+          "pts": [
+            {
+              "lng": 116.03,
+              "lat": 25.88,
+              "name": "瑞金"
+            },
+            {
+              "lng": 106.92,
+              "lat": 27.73,
+              "name": "遵义"
+            },
+            {
+              "lng": 105.05,
+              "lat": 35.69,
+              "name": "会宁"
+            },
+            {
+              "lng": 109.49,
+              "lat": 36.6,
+              "name": "延安"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "victory",
+          "at": "遵义",
+          "label": "遵义会议 确立正确领导"
+        },
+        {
+          "kind": "victory",
+          "at": "会宁",
+          "label": "三大主力会师"
+        }
+      ]
+    }
   },
   {
     "id": "battle-of-shanghai-1937",
@@ -111,15 +545,96 @@
     "category": "抗日战争",
     "start": "1937-08-13",
     "end": "1937-11-12",
-    "location": { "text": "上海", "province": "上海", "lng": 121.47, "lat": 31.23 },
+    "location": {
+      "text": "上海",
+      "province": "上海",
+      "lng": 121.47,
+      "lat": 31.23
+    },
     "participants": [
-      { "generalId": "chiang-kai-shek", "camp": "kmt", "role": "军事委员会委员长（最高统帅）" },
-      { "generalId": "chen-cheng", "camp": "kmt", "role": "第三战区前敌总指挥、左翼军总司令" },
-      { "generalId": "zhang-zizhong", "camp": "kmt", "role": "第五十九军军长（后期投入）" }
+      {
+        "generalId": "chiang-kai-shek",
+        "camp": "kmt",
+        "role": "军事委员会委员长（最高统帅）"
+      },
+      {
+        "generalId": "chen-cheng",
+        "camp": "kmt",
+        "role": "第三战区前敌总指挥、左翼军总司令"
+      },
+      {
+        "generalId": "zhang-zizhong",
+        "camp": "kmt",
+        "role": "第五十九军军长（后期投入）"
+      }
     ],
     "outcome": "上海失守，但粉碎日军三个月灭亡中国的企图",
     "summary": "抗战爆发后中日双方投入近百万兵力的大会战，中国军队坚守三月，打破日军速战速决计划，掩护沿海工业内迁。",
-    "sources": ["《抗日战争正面战场》（中国第二历史档案馆）"]
+    "sources": [
+      "《抗日战争正面战场》（中国第二历史档案馆）"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "kmt",
+          "kind": "advance",
+          "label": "中国军队主动围攻上海日军据点",
+          "pts": [
+            {
+              "lng": 118.79,
+              "lat": 32.06,
+              "name": "南京"
+            },
+            {
+              "lng": 121.47,
+              "lat": 31.23,
+              "name": "上海"
+            }
+          ]
+        },
+        {
+          "side": "enemy",
+          "kind": "advance",
+          "label": "日军增兵登陆反扑",
+          "pts": [
+            {
+              "lng": 120.15,
+              "lat": 30.28,
+              "name": "杭州"
+            },
+            {
+              "lng": 121.47,
+              "lat": 31.23,
+              "name": "上海"
+            }
+          ]
+        },
+        {
+          "side": "kmt",
+          "kind": "retreat",
+          "label": "淞沪失守后西撤南京",
+          "pts": [
+            {
+              "lng": 121.47,
+              "lat": 31.23,
+              "name": "上海"
+            },
+            {
+              "lng": 118.79,
+              "lat": 32.06,
+              "name": "南京"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "battle",
+          "at": "上海",
+          "label": "血战三月 粉碎日军速胜企图"
+        }
+      ]
+    }
   },
   {
     "id": "pingxingguan-1937",
@@ -128,15 +643,79 @@
     "category": "抗日战争",
     "start": "1937-09-25",
     "end": "1937-09-25",
-    "location": { "text": "山西灵丘平型关", "province": "山西", "lng": 113.96, "lat": 39.42 },
+    "location": {
+      "text": "山西灵丘平型关",
+      "province": "山西",
+      "lng": 113.96,
+      "lat": 39.42
+    },
     "participants": [
-      { "generalId": "lin-biao", "camp": "ccp", "role": "八路军第115师师长" },
-      { "generalId": "nie-rongzhen", "camp": "ccp", "role": "八路军第115师副师长" },
-      { "generalId": "luo-ronghuan", "camp": "ccp", "role": "八路军第115师政训处主任" }
+      {
+        "generalId": "lin-biao",
+        "camp": "ccp",
+        "role": "八路军第115师师长"
+      },
+      {
+        "generalId": "nie-rongzhen",
+        "camp": "ccp",
+        "role": "八路军第115师副师长"
+      },
+      {
+        "generalId": "luo-ronghuan",
+        "camp": "ccp",
+        "role": "八路军第115师政训处主任"
+      }
     ],
     "outcome": "歼灭日军千余人，取得全国抗战开始后中国军队第一个大胜利",
     "summary": "八路军第115师在平型关伏击日军第5师团辎重部队，取得全国抗战开始以来中国军队的第一个大胜利，打破日军不可战胜的神话。",
-    "sources": ["《中国人民解放军战史》（军事科学院）"]
+    "sources": [
+      "《中国人民解放军战史》（军事科学院）"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "enemy",
+          "kind": "advance",
+          "label": "日军第5师团辎重经平型关西进",
+          "pts": [
+            {
+              "lng": 113.96,
+              "lat": 39.42,
+              "name": "平型关"
+            },
+            {
+              "lng": 112.68,
+              "lat": 38.62,
+              "name": "忻口"
+            }
+          ]
+        },
+        {
+          "side": "ccp",
+          "kind": "advance",
+          "label": "八路军115师侧翼设伏",
+          "pts": [
+            {
+              "lng": 112.55,
+              "lat": 37.87,
+              "name": "太原"
+            },
+            {
+              "lng": 113.96,
+              "lat": 39.42,
+              "name": "平型关"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "annihilate",
+          "at": "平型关",
+          "label": "平型关大捷 歼日军千余"
+        }
+      ]
+    }
   },
   {
     "id": "xinkou-1937",
@@ -145,15 +724,84 @@
     "category": "抗日战争",
     "start": "1937-10-13",
     "end": "1937-11-02",
-    "location": { "text": "山西忻口", "province": "山西", "lng": 112.68, "lat": 38.62 },
+    "location": {
+      "text": "山西忻口",
+      "province": "山西",
+      "lng": 112.68,
+      "lat": 38.62
+    },
     "participants": [
-      { "generalId": "yan-xishan", "camp": "kmt", "role": "第二战区司令长官" },
-      { "generalId": "wei-lihuang", "camp": "kmt", "role": "第二战区前敌总指挥、第十四集团军总司令" },
-      { "generalId": "fu-zuoyi", "camp": "kmt", "role": "第七集团军总司令" }
+      {
+        "generalId": "yan-xishan",
+        "camp": "kmt",
+        "role": "第二战区司令长官"
+      },
+      {
+        "generalId": "wei-lihuang",
+        "camp": "kmt",
+        "role": "第二战区前敌总指挥、第十四集团军总司令"
+      },
+      {
+        "generalId": "fu-zuoyi",
+        "camp": "kmt",
+        "role": "第七集团军总司令"
+      }
     ],
     "outcome": "忻口失守，但重创日军，是华北正面战场规模最大的会战",
     "summary": "第二战区在忻口地区抗击日军进攻太原，国共军队协同作战，是抗战初期华北正面战场规模最大、战斗最激烈的一次会战。",
-    "sources": ["《抗日战争正面战场》（中国第二历史档案馆）"]
+    "sources": [
+      "《抗日战争正面战场》（中国第二历史档案馆）"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "enemy",
+          "kind": "advance",
+          "label": "日军沿同蒲路南犯太原",
+          "pts": [
+            {
+              "lng": 113.96,
+              "lat": 39.42,
+              "name": "平型关"
+            },
+            {
+              "lng": 112.68,
+              "lat": 38.62,
+              "name": "忻口"
+            },
+            {
+              "lng": 112.55,
+              "lat": 37.87,
+              "name": "太原"
+            }
+          ]
+        },
+        {
+          "side": "kmt",
+          "kind": "advance",
+          "label": "第二战区忻口设防阻击",
+          "pts": [
+            {
+              "lng": 112.55,
+              "lat": 37.87,
+              "name": "太原"
+            },
+            {
+              "lng": 112.68,
+              "lat": 38.62,
+              "name": "忻口"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "battle",
+          "at": "忻口",
+          "label": "忻口会战 华北规模最大阻击战"
+        }
+      ]
+    }
   },
   {
     "id": "xusuzhou-1938",
@@ -162,15 +810,107 @@
     "category": "抗日战争",
     "start": "1938-01-01",
     "end": "1938-05-19",
-    "location": { "text": "苏鲁豫皖交界", "province": "江苏", "lng": 117.28, "lat": 34.26 },
+    "location": {
+      "text": "苏鲁豫皖交界",
+      "province": "江苏",
+      "lng": 117.28,
+      "lat": 34.26
+    },
     "participants": [
-      { "generalId": "li-zongren", "camp": "kmt", "role": "第五战区司令长官" },
-      { "generalId": "bai-chongxi", "camp": "kmt", "role": "军事委员会副参谋总长（协助指挥）" },
-      { "generalId": "zhang-zizhong", "camp": "kmt", "role": "第五十九军军长（临沂战斗）" }
+      {
+        "generalId": "li-zongren",
+        "camp": "kmt",
+        "role": "第五战区司令长官"
+      },
+      {
+        "generalId": "bai-chongxi",
+        "camp": "kmt",
+        "role": "军事委员会副参谋总长（协助指挥）"
+      },
+      {
+        "generalId": "zhang-zizhong",
+        "camp": "kmt",
+        "role": "第五十九军军长（临沂战斗）"
+      }
     ],
     "outcome": "台儿庄大捷后中国军队主动撤离徐州，粉碎日军速决企图",
     "summary": "第五战区抗击日军南北夹击，包含临沂战斗、台儿庄战役等重要战斗，是抗战初期正面战场重要会战。",
-    "sources": ["《抗日战争正面战场》（中国第二历史档案馆）", "《中国抗日战争军事史料丛书》"]
+    "sources": [
+      "《抗日战争正面战场》（中国第二历史档案馆）",
+      "《中国抗日战争军事史料丛书》"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "enemy",
+          "kind": "advance",
+          "label": "日军南北夹击徐州",
+          "pts": [
+            {
+              "lng": 117,
+              "lat": 36.65,
+              "name": "济南"
+            },
+            {
+              "lng": 117.28,
+              "lat": 34.26,
+              "name": "徐州"
+            }
+          ]
+        },
+        {
+          "side": "enemy",
+          "kind": "advance",
+          "label": "",
+          "pts": [
+            {
+              "lng": 117.36,
+              "lat": 32.94,
+              "name": "蚌埠"
+            },
+            {
+              "lng": 117.28,
+              "lat": 34.26,
+              "name": "徐州"
+            }
+          ]
+        },
+        {
+          "side": "kmt",
+          "kind": "retreat",
+          "label": "第五战区主力主动突围西撤",
+          "pts": [
+            {
+              "lng": 117.28,
+              "lat": 34.26,
+              "name": "徐州"
+            },
+            {
+              "lng": 114.31,
+              "lat": 34.8,
+              "name": "开封"
+            },
+            {
+              "lng": 113.65,
+              "lat": 34.76,
+              "name": "郑州"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "victory",
+          "at": "台儿庄",
+          "label": "台儿庄大捷"
+        },
+        {
+          "kind": "battle",
+          "at": "临沂",
+          "label": "临沂阻击战"
+        }
+      ]
+    }
   },
   {
     "id": "taierzhuang-1938",
@@ -180,13 +920,91 @@
     "category": "抗日战争",
     "start": "1938-03-16",
     "end": "1938-04-07",
-    "location": { "text": "山东枣庄台儿庄", "province": "山东", "lng": 117.72, "lat": 34.56 },
+    "location": {
+      "text": "山东枣庄台儿庄",
+      "province": "山东",
+      "lng": 117.72,
+      "lat": 34.56
+    },
     "participants": [
-      { "generalId": "li-zongren", "camp": "kmt", "role": "第五战区司令长官" }
+      {
+        "generalId": "li-zongren",
+        "camp": "kmt",
+        "role": "第五战区司令长官"
+      }
     ],
     "outcome": "中国军队歼灭日军一万余人，取得抗战正面战场重大胜利",
     "summary": "第五战区以孙连仲第2集团军固守台儿庄、汤恩伯军团侧击，重创日军濑谷、坂本支队，史称台儿庄大捷，为抗战以来正面战场最大胜利之一。",
-    "sources": ["《抗日战争正面战场》（中国第二历史档案馆）"]
+    "sources": [
+      "《抗日战争正面战场》（中国第二历史档案馆）"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "enemy",
+          "kind": "advance",
+          "label": "日军南北对进夹击台儿庄",
+          "pts": [
+            {
+              "lng": 117,
+              "lat": 36.65,
+              "name": "济南"
+            },
+            {
+              "lng": 117.32,
+              "lat": 34.81,
+              "name": "枣庄"
+            },
+            {
+              "lng": 117.72,
+              "lat": 34.56,
+              "name": "台儿庄"
+            }
+          ]
+        },
+        {
+          "side": "enemy",
+          "kind": "advance",
+          "label": "日军另一路经临沂南下",
+          "pts": [
+            {
+              "lng": 118.35,
+              "lat": 35.05,
+              "name": "临沂"
+            },
+            {
+              "lng": 117.72,
+              "lat": 34.56,
+              "name": "台儿庄"
+            }
+          ]
+        },
+        {
+          "side": "kmt",
+          "kind": "advance",
+          "label": "汤恩伯军团侧后反击",
+          "pts": [
+            {
+              "lng": 117.28,
+              "lat": 34.26,
+              "name": "徐州"
+            },
+            {
+              "lng": 117.72,
+              "lat": 34.56,
+              "name": "台儿庄"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "annihilate",
+          "at": "台儿庄",
+          "label": "台儿庄大捷 歼日军万余人"
+        }
+      ]
+    }
   },
   {
     "id": "wuhan-1938",
@@ -195,16 +1013,111 @@
     "category": "抗日战争",
     "start": "1938-06-11",
     "end": "1938-10-27",
-    "location": { "text": "武汉外围鄂豫皖赣", "province": "湖北", "lng": 114.30, "lat": 30.59 },
+    "location": {
+      "text": "武汉外围鄂豫皖赣",
+      "province": "湖北",
+      "lng": 114.3,
+      "lat": 30.59
+    },
     "participants": [
-      { "generalId": "chiang-kai-shek", "camp": "kmt", "role": "军事委员会委员长（最高统帅）" },
-      { "generalId": "chen-cheng", "camp": "kmt", "role": "第九战区司令长官、武汉卫戍总司令" },
-      { "generalId": "xue-yue", "camp": "kmt", "role": "第一兵团总司令（万家岭大捷）" },
-      { "generalId": "bai-chongxi", "camp": "kmt", "role": "军事委员会副参谋总长（协助指挥）" }
+      {
+        "generalId": "chiang-kai-shek",
+        "camp": "kmt",
+        "role": "军事委员会委员长（最高统帅）"
+      },
+      {
+        "generalId": "chen-cheng",
+        "camp": "kmt",
+        "role": "第九战区司令长官、武汉卫戍总司令"
+      },
+      {
+        "generalId": "xue-yue",
+        "camp": "kmt",
+        "role": "第一兵团总司令（万家岭大捷）"
+      },
+      {
+        "generalId": "bai-chongxi",
+        "camp": "kmt",
+        "role": "军事委员会副参谋总长（协助指挥）"
+      }
     ],
     "outcome": "武汉失守，抗战进入战略相持阶段",
     "summary": "抗战初期规模最大的会战，中国军队在武汉外围广大地区抗击日军，薛岳部取得万家岭大捷。会战后抗日战争由战略防御转入战略相持阶段。",
-    "sources": ["《抗日战争正面战场》（中国第二历史档案馆）"]
+    "sources": [
+      "《抗日战争正面战场》（中国第二历史档案馆）"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "enemy",
+          "kind": "advance",
+          "label": "日军沿长江与大别山北麓进逼武汉",
+          "pts": [
+            {
+              "lng": 116,
+              "lat": 29.71,
+              "name": "九江"
+            },
+            {
+              "lng": 115.75,
+              "lat": 29.31,
+              "name": "德安"
+            },
+            {
+              "lng": 114.3,
+              "lat": 30.59,
+              "name": "武汉"
+            }
+          ]
+        },
+        {
+          "side": "kmt",
+          "kind": "advance",
+          "label": "薛岳兵团万家岭围歼",
+          "pts": [
+            {
+              "lng": 115.86,
+              "lat": 28.68,
+              "name": "南昌"
+            },
+            {
+              "lng": 115.75,
+              "lat": 29.31,
+              "name": "德安"
+            },
+            {
+              "lng": 115.6,
+              "lat": 29.1,
+              "name": "万家岭"
+            }
+          ]
+        },
+        {
+          "side": "kmt",
+          "kind": "retreat",
+          "label": "会战后主动放弃武汉",
+          "pts": [
+            {
+              "lng": 114.3,
+              "lat": 30.59,
+              "name": "武汉"
+            },
+            {
+              "lng": 111.29,
+              "lat": 30.7,
+              "name": "宜昌"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "annihilate",
+          "at": "万家岭",
+          "label": "万家岭大捷 几乎全歼日军106师团"
+        }
+      ]
+    }
   },
   {
     "id": "kunlunguan-1939",
@@ -213,15 +1126,74 @@
     "category": "抗日战争",
     "start": "1939-12-18",
     "end": "1940-01-11",
-    "location": { "text": "广西昆仑关", "province": "广西", "lng": 108.62, "lat": 23.14 },
+    "location": {
+      "text": "广西昆仑关",
+      "province": "广西",
+      "lng": 108.62,
+      "lat": 23.14
+    },
     "participants": [
-      { "generalId": "bai-chongxi", "camp": "kmt", "role": "桂南会战指挥（军事委员会副参谋总长）" },
-      { "generalId": "du-yuming", "camp": "kmt", "role": "第5军军长" },
-      { "generalId": "dai-anlan", "camp": "kmt", "role": "第200师师长" }
+      {
+        "generalId": "bai-chongxi",
+        "camp": "kmt",
+        "role": "桂南会战指挥（军事委员会副参谋总长）"
+      },
+      {
+        "generalId": "du-yuming",
+        "camp": "kmt",
+        "role": "第5军军长"
+      },
+      {
+        "generalId": "dai-anlan",
+        "camp": "kmt",
+        "role": "第200师师长"
+      }
     ],
     "outcome": "中国军队攻克昆仑关，歼灭日军第5师团一部",
     "summary": "第5军等部对占据昆仑关的日军发起攻坚，取得昆仑关大捷，是抗战中中国军队攻坚战的重要胜利，中国机械化部队首次大规模投入作战。",
-    "sources": ["《抗日战争正面战场》（中国第二历史档案馆）"]
+    "sources": [
+      "《抗日战争正面战场》（中国第二历史档案馆）"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "enemy",
+          "kind": "advance",
+          "label": "日军占领南宁北犯昆仑关",
+          "pts": [
+            {
+              "lng": 108.37,
+              "lat": 22.82,
+              "name": "南宁"
+            },
+            {
+              "lng": 108.62,
+              "lat": 23.14,
+              "name": "昆仑关"
+            }
+          ]
+        },
+        {
+          "side": "kmt",
+          "kind": "advance",
+          "label": "第5军机械化部队攻坚",
+          "pts": [
+            {
+              "lng": 108.62,
+              "lat": 23.14,
+              "name": "昆仑关"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "annihilate",
+          "at": "昆仑关",
+          "label": "昆仑关大捷 毙敌旅团长中村正雄"
+        }
+      ]
+    }
   },
   {
     "id": "hundred-regiments-1940",
@@ -230,16 +1202,84 @@
     "category": "抗日战争",
     "start": "1940-08-20",
     "end": "1940-12-05",
-    "location": { "text": "华北", "province": "山西", "lng": 112.55, "lat": 37.87 },
+    "location": {
+      "text": "华北",
+      "province": "山西",
+      "lng": 112.55,
+      "lat": 37.87
+    },
     "participants": [
-      { "generalId": "peng-dehuai", "camp": "ccp", "role": "八路军副总司令（前线指挥）" },
-      { "generalId": "nie-rongzhen", "camp": "ccp", "role": "晋察冀军区司令员" },
-      { "generalId": "liu-bocheng", "camp": "ccp", "role": "八路军第129师师长" },
-      { "generalId": "chen-geng", "camp": "ccp", "role": "第129师第386旅旅长" }
+      {
+        "generalId": "peng-dehuai",
+        "camp": "ccp",
+        "role": "八路军副总司令（前线指挥）"
+      },
+      {
+        "generalId": "nie-rongzhen",
+        "camp": "ccp",
+        "role": "晋察冀军区司令员"
+      },
+      {
+        "generalId": "liu-bocheng",
+        "camp": "ccp",
+        "role": "八路军第129师师长"
+      },
+      {
+        "generalId": "chen-geng",
+        "camp": "ccp",
+        "role": "第129师第386旅旅长"
+      }
     ],
     "outcome": "破袭日军华北交通线，打击日军'囚笼政策'",
     "summary": "八路军在华北出动105个团发动的大规模破袭战，破坏正太、同蒲等铁路，攻克日伪据点，是敌后战场规模最大的进攻战役。",
-    "sources": ["《中国人民解放军战史》（军事科学院）"]
+    "sources": [
+      "《中国人民解放军战史》（军事科学院）"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "ccp",
+          "kind": "advance",
+          "label": "八路军破袭正太、同蒲铁路",
+          "pts": [
+            {
+              "lng": 112.55,
+              "lat": 37.87,
+              "name": "太原"
+            },
+            {
+              "lng": 114.51,
+              "lat": 38.04,
+              "name": "石家庄"
+            }
+          ]
+        },
+        {
+          "side": "ccp",
+          "kind": "advance",
+          "label": "晋察冀军区出击",
+          "pts": [
+            {
+              "lng": 115.46,
+              "lat": 38.87,
+              "name": "保定"
+            },
+            {
+              "lng": 114.51,
+              "lat": 38.04,
+              "name": "石家庄"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "battle",
+          "at": "石家庄",
+          "label": "破袭华北日军交通线与据点"
+        }
+      ]
+    }
   },
   {
     "id": "zaoyi-1940",
@@ -248,14 +1288,74 @@
     "category": "抗日战争",
     "start": "1940-05-01",
     "end": "1940-06-18",
-    "location": { "text": "湖北枣阳、宜昌", "province": "湖北", "lng": 112.24, "lat": 31.72 },
+    "location": {
+      "text": "湖北枣阳、宜昌",
+      "province": "湖北",
+      "lng": 112.24,
+      "lat": 31.72
+    },
     "participants": [
-      { "generalId": "li-zongren", "camp": "kmt", "role": "第五战区司令长官" },
-      { "generalId": "zhang-zizhong", "camp": "kmt", "role": "第三十三集团军总司令" }
+      {
+        "generalId": "li-zongren",
+        "camp": "kmt",
+        "role": "第五战区司令长官"
+      },
+      {
+        "generalId": "zhang-zizhong",
+        "camp": "kmt",
+        "role": "第三十三集团军总司令"
+      }
     ],
     "outcome": "宜昌失守，第三十三集团军总司令张自忠壮烈殉国",
     "summary": "第五战区抗击日军对枣阳、宜昌地区的进攻，第三十三集团军总司令张自忠亲率部队渡河作战，在南瓜店壮烈殉国，是抗战中殉国的最高级别将领。",
-    "sources": ["《抗日战争正面战场》（中国第二历史档案馆）"]
+    "sources": [
+      "《抗日战争正面战场》（中国第二历史档案馆）"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "enemy",
+          "kind": "advance",
+          "label": "日军进犯枣阳、宜昌",
+          "pts": [
+            {
+              "lng": 112.75,
+              "lat": 32.13,
+              "name": "枣阳"
+            },
+            {
+              "lng": 111.29,
+              "lat": 30.7,
+              "name": "宜昌"
+            }
+          ]
+        },
+        {
+          "side": "kmt",
+          "kind": "advance",
+          "label": "张自忠部渡襄河截击",
+          "pts": [
+            {
+              "lng": 112.75,
+              "lat": 32.13,
+              "name": "枣阳"
+            },
+            {
+              "lng": 112.1,
+              "lat": 31.9,
+              "name": "南瓜店"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "battle",
+          "at": "南瓜店",
+          "label": "张自忠总司令壮烈殉国"
+        }
+      ]
+    }
   },
   {
     "id": "changsha-3rd-1941",
@@ -264,13 +1364,69 @@
     "category": "抗日战争",
     "start": "1941-12-24",
     "end": "1942-01-16",
-    "location": { "text": "湖南长沙", "province": "湖南", "lng": 112.94, "lat": 28.23 },
+    "location": {
+      "text": "湖南长沙",
+      "province": "湖南",
+      "lng": 112.94,
+      "lat": 28.23
+    },
     "participants": [
-      { "generalId": "xue-yue", "camp": "kmt", "role": "第九战区司令长官" }
+      {
+        "generalId": "xue-yue",
+        "camp": "kmt",
+        "role": "第九战区司令长官"
+      }
     ],
     "outcome": "中国军队取得长沙大捷，歼灭日军数万人",
     "summary": "第九战区采用'天炉战法'诱敌深入，在长沙地区重创日军，取得太平洋战争爆发后盟军在东方战场的首次重大胜利，产生重大国际影响。",
-    "sources": ["《抗日战争正面战场》（中国第二历史档案馆）"]
+    "sources": [
+      "《抗日战争正面战场》（中国第二历史档案馆）"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "enemy",
+          "kind": "advance",
+          "label": "日军三犯长沙",
+          "pts": [
+            {
+              "lng": 114.3,
+              "lat": 30.59,
+              "name": "武汉"
+            },
+            {
+              "lng": 112.94,
+              "lat": 28.23,
+              "name": "长沙"
+            }
+          ]
+        },
+        {
+          "side": "kmt",
+          "kind": "advance",
+          "label": "第九战区天炉战法诱敌反包围",
+          "pts": [
+            {
+              "lng": 112.57,
+              "lat": 26.89,
+              "name": "衡阳"
+            },
+            {
+              "lng": 112.94,
+              "lat": 28.23,
+              "name": "长沙"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "annihilate",
+          "at": "长沙",
+          "label": "第三次长沙大捷 歼敌数万"
+        }
+      ]
+    }
   },
   {
     "id": "burma-expedition-1942",
@@ -279,15 +1435,102 @@
     "category": "抗日战争",
     "start": "1942-03-01",
     "end": "1942-08-01",
-    "location": { "text": "缅甸同古、仁安羌", "province": "境外", "lng": 96.43, "lat": 20.14 },
+    "location": {
+      "text": "缅甸同古、仁安羌",
+      "province": "境外",
+      "lng": 96.43,
+      "lat": 20.14
+    },
     "participants": [
-      { "generalId": "du-yuming", "camp": "kmt", "role": "第5军军长、远征军副司令长官" },
-      { "generalId": "dai-anlan", "camp": "kmt", "role": "第200师师长" },
-      { "generalId": "sun-liren", "camp": "kmt", "role": "新编第38师师长（仁安羌大捷）" }
+      {
+        "generalId": "du-yuming",
+        "camp": "kmt",
+        "role": "第5军军长、远征军副司令长官"
+      },
+      {
+        "generalId": "dai-anlan",
+        "camp": "kmt",
+        "role": "第200师师长"
+      },
+      {
+        "generalId": "sun-liren",
+        "camp": "kmt",
+        "role": "新编第38师师长（仁安羌大捷）"
+      }
     ],
     "outcome": "同古保卫战、仁安羌大捷重创日军，第一次入缅作战受挫，戴安澜殉国",
     "summary": "中国远征军入缅协同英军对日作战，第200师同古保卫战力战突围，孙立人新38师取得仁安羌大捷解救英军。第一次入缅作战受挫，师长戴安澜负伤殉国。",
-    "sources": ["《中国远征军史》", "《抗日战争正面战场》"]
+    "sources": [
+      "《中国远征军史》",
+      "《抗日战争正面战场》"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "kmt",
+          "kind": "advance",
+          "label": "远征军入缅同古布防、仁安羌解围",
+          "pts": [
+            {
+              "lng": 98.49,
+              "lat": 25.02,
+              "name": "腾冲"
+            },
+            {
+              "lng": 96.43,
+              "lat": 20.14,
+              "name": "同古"
+            }
+          ]
+        },
+        {
+          "side": "kmt",
+          "kind": "advance",
+          "label": "新38师仁安羌大捷",
+          "pts": [
+            {
+              "lng": 96.43,
+              "lat": 20.14,
+              "name": "同古"
+            },
+            {
+              "lng": 95.1,
+              "lat": 20.45,
+              "name": "仁安羌"
+            }
+          ]
+        },
+        {
+          "side": "kmt",
+          "kind": "retreat",
+          "label": "一次入缅受挫 分路回撤",
+          "pts": [
+            {
+              "lng": 96.43,
+              "lat": 20.14,
+              "name": "同古"
+            },
+            {
+              "lng": 98.49,
+              "lat": 25.02,
+              "name": "腾冲"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "battle",
+          "at": "同古",
+          "label": "同古保卫战 戴安澜殉国于缅北"
+        },
+        {
+          "kind": "victory",
+          "at": "仁安羌",
+          "label": "仁安羌大捷 解救英军"
+        }
+      ]
+    }
   },
   {
     "id": "burma-counter-1943",
@@ -296,14 +1539,75 @@
     "category": "抗日战争",
     "start": "1943-10-24",
     "end": "1945-03-30",
-    "location": { "text": "缅北、滇西", "province": "境外", "lng": 97.40, "lat": 25.85 },
+    "location": {
+      "text": "缅北、滇西",
+      "province": "境外",
+      "lng": 97.4,
+      "lat": 25.85
+    },
     "participants": [
-      { "generalId": "wei-lihuang", "camp": "kmt", "role": "中国远征军司令长官（滇西反攻）" },
-      { "generalId": "sun-liren", "camp": "kmt", "role": "新编第一军军长（缅北反攻）" }
+      {
+        "generalId": "wei-lihuang",
+        "camp": "kmt",
+        "role": "中国远征军司令长官（滇西反攻）"
+      },
+      {
+        "generalId": "sun-liren",
+        "camp": "kmt",
+        "role": "新编第一军军长（缅北反攻）"
+      }
     ],
     "outcome": "打通中印公路，收复滇西缅北失地",
     "summary": "中国驻印军与远征军发起缅北、滇西反攻，歼灭日军精锐，收复失地并打通中印公路（史迪威公路），是抗战后期正面战场的重大战略反攻。",
-    "sources": ["《中国远征军史》", "《抗日战争正面战场》"]
+    "sources": [
+      "《中国远征军史》",
+      "《抗日战争正面战场》"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "kmt",
+          "kind": "advance",
+          "label": "远征军滇西反攻 收复腾冲龙陵",
+          "pts": [
+            {
+              "lng": 98.69,
+              "lat": 24.59,
+              "name": "龙陵"
+            },
+            {
+              "lng": 98.49,
+              "lat": 25.02,
+              "name": "腾冲"
+            }
+          ]
+        },
+        {
+          "side": "kmt",
+          "kind": "advance",
+          "label": "驻印军缅北反攻",
+          "pts": [
+            {
+              "lng": 96.43,
+              "lat": 20.14,
+              "name": "同古"
+            },
+            {
+              "lng": 95.1,
+              "lat": 20.45,
+              "name": "仁安羌"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "victory",
+          "at": "腾冲",
+          "label": "收复腾冲 打通中印公路"
+        }
+      ]
+    }
   },
   {
     "id": "liaoshen-1948",
@@ -312,14 +1616,101 @@
     "category": "解放战争",
     "start": "1948-09-12",
     "end": "1948-11-02",
-    "location": { "text": "辽宁锦州、沈阳", "province": "辽宁", "lng": 121.13, "lat": 41.10 },
+    "location": {
+      "text": "辽宁锦州、沈阳",
+      "province": "辽宁",
+      "lng": 121.13,
+      "lat": 41.1
+    },
     "participants": [
-      { "generalId": "lin-biao", "camp": "ccp", "role": "东北野战军司令员" },
-      { "generalId": "luo-ronghuan", "camp": "ccp", "role": "东北野战军政治委员" }
+      {
+        "generalId": "lin-biao",
+        "camp": "ccp",
+        "role": "东北野战军司令员"
+      },
+      {
+        "generalId": "luo-ronghuan",
+        "camp": "ccp",
+        "role": "东北野战军政治委员"
+      }
     ],
     "outcome": "解放军攻占东北全境，歼灭国民党军47万余人",
     "summary": "解放战争三大战役之一。东北野战军先取锦州封闭东北，继而围歼廖耀湘兵团、解放沈阳，东北全境解放，全国军事形势发生根本转折。",
-    "sources": ["《中国人民解放军战史》（军事科学院）"]
+    "sources": [
+      "《中国人民解放军战史》（军事科学院）"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "ccp",
+          "kind": "advance",
+          "label": "东野主力南下先取锦州（关门）",
+          "pts": [
+            {
+              "lng": 125.32,
+              "lat": 43.82,
+              "name": "长春"
+            },
+            {
+              "lng": 123.43,
+              "lat": 41.8,
+              "name": "沈阳"
+            },
+            {
+              "lng": 121.13,
+              "lat": 41.1,
+              "name": "锦州"
+            }
+          ]
+        },
+        {
+          "side": "ccp",
+          "kind": "advance",
+          "label": "回师围歼廖耀湘兵团",
+          "pts": [
+            {
+              "lng": 121.13,
+              "lat": 41.1,
+              "name": "锦州"
+            },
+            {
+              "lng": 123.43,
+              "lat": 41.8,
+              "name": "沈阳"
+            }
+          ]
+        },
+        {
+          "side": "enemy",
+          "kind": "retreat",
+          "label": "国民党军经营口撤退未果",
+          "pts": [
+            {
+              "lng": 123.43,
+              "lat": 41.8,
+              "name": "沈阳"
+            },
+            {
+              "lng": 122.24,
+              "lat": 40.67,
+              "name": "营口"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "annihilate",
+          "at": "锦州",
+          "label": "攻克锦州 封闭东北大门"
+        },
+        {
+          "kind": "annihilate",
+          "at": "沈阳",
+          "label": "解放沈阳 歼敌47万"
+        }
+      ]
+    }
   },
   {
     "id": "huaihai-1948",
@@ -328,17 +1719,121 @@
     "category": "解放战争",
     "start": "1948-11-06",
     "end": "1949-01-10",
-    "location": { "text": "以徐州为中心的广大地区", "province": "江苏", "lng": 117.28, "lat": 34.26 },
+    "location": {
+      "text": "以徐州为中心的广大地区",
+      "province": "江苏",
+      "lng": 117.28,
+      "lat": 34.26
+    },
     "participants": [
-      { "generalId": "liu-bocheng", "camp": "ccp", "role": "中原野战军司令员" },
-      { "generalId": "chen-yi", "camp": "ccp", "role": "华东野战军司令员兼政委、总前委常委" },
-      { "generalId": "su-yu", "camp": "ccp", "role": "华东野战军代司令员兼代政委" },
-      { "generalId": "chen-geng", "camp": "ccp", "role": "中原野战军第四纵队司令员" },
-      { "generalId": "du-yuming", "camp": "kmt", "role": "徐州剿匪总司令部副总司令" }
+      {
+        "generalId": "liu-bocheng",
+        "camp": "ccp",
+        "role": "中原野战军司令员"
+      },
+      {
+        "generalId": "chen-yi",
+        "camp": "ccp",
+        "role": "华东野战军司令员兼政委、总前委常委"
+      },
+      {
+        "generalId": "su-yu",
+        "camp": "ccp",
+        "role": "华东野战军代司令员兼代政委"
+      },
+      {
+        "generalId": "chen-geng",
+        "camp": "ccp",
+        "role": "中原野战军第四纵队司令员"
+      },
+      {
+        "generalId": "du-yuming",
+        "camp": "kmt",
+        "role": "徐州剿匪总司令部副总司令"
+      }
     ],
     "outcome": "解放军歼灭国民党军55万余人，杜聿明被俘",
     "summary": "解放战争三大战役之一。华东、中原两大野战军协同作战，先后歼灭黄百韬、黄维、杜聿明各部，奠定解放长江以北的基础。",
-    "sources": ["《中国人民解放军战史》（军事科学院）"]
+    "sources": [
+      "《中国人民解放军战史》（军事科学院）"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "ccp",
+          "kind": "advance",
+          "label": "华野围歼黄百韬兵团于碾庄",
+          "pts": [
+            {
+              "lng": 117,
+              "lat": 36.65,
+              "name": "济南"
+            },
+            {
+              "lng": 117.28,
+              "lat": 34.26,
+              "name": "徐州"
+            },
+            {
+              "lng": 117.9,
+              "lat": 34.35,
+              "name": "碾庄"
+            }
+          ]
+        },
+        {
+          "side": "ccp",
+          "kind": "advance",
+          "label": "中野围歼黄维兵团于双堆集",
+          "pts": [
+            {
+              "lng": 118.79,
+              "lat": 32.06,
+              "name": "南京"
+            },
+            {
+              "lng": 116.6,
+              "lat": 33.3,
+              "name": "双堆集"
+            }
+          ]
+        },
+        {
+          "side": "enemy",
+          "kind": "retreat",
+          "label": "杜聿明集团西撤被围陈官庄",
+          "pts": [
+            {
+              "lng": 117.28,
+              "lat": 34.26,
+              "name": "徐州"
+            },
+            {
+              "lng": 116.3,
+              "lat": 34.1,
+              "name": "陈官庄"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "annihilate",
+          "at": "碾庄",
+          "label": "歼黄百韬兵团"
+        },
+        {
+          "kind": "annihilate",
+          "at": "双堆集",
+          "label": "歼黄维兵团"
+        },
+        {
+          "kind": "annihilate",
+          "at": "陈官庄",
+          "label": "围歼杜聿明集团 杜被俘"
+        }
+      ]
+    }
   },
   {
     "id": "pingjin-1948",
@@ -347,16 +1842,101 @@
     "category": "解放战争",
     "start": "1948-11-29",
     "end": "1949-01-31",
-    "location": { "text": "北平、天津、张家口", "province": "河北", "lng": 116.41, "lat": 39.90 },
+    "location": {
+      "text": "北平、天津、张家口",
+      "province": "河北",
+      "lng": 116.41,
+      "lat": 39.9
+    },
     "participants": [
-      { "generalId": "lin-biao", "camp": "ccp", "role": "平津前线司令员" },
-      { "generalId": "luo-ronghuan", "camp": "ccp", "role": "平津前线政治委员" },
-      { "generalId": "nie-rongzhen", "camp": "ccp", "role": "华北军区司令员" },
-      { "generalId": "fu-zuoyi", "camp": "kmt", "role": "华北剿匪总司令部总司令" }
+      {
+        "generalId": "lin-biao",
+        "camp": "ccp",
+        "role": "平津前线司令员"
+      },
+      {
+        "generalId": "luo-ronghuan",
+        "camp": "ccp",
+        "role": "平津前线政治委员"
+      },
+      {
+        "generalId": "nie-rongzhen",
+        "camp": "ccp",
+        "role": "华北军区司令员"
+      },
+      {
+        "generalId": "fu-zuoyi",
+        "camp": "kmt",
+        "role": "华北剿匪总司令部总司令"
+      }
     ],
     "outcome": "北平和平解放，傅作义接受改编",
     "summary": "解放战争三大战役之一。解放军分割包围平津，攻克天津后，傅作义接受和平改编，北平和平解放，古都文物免遭战火。",
-    "sources": ["《中国人民解放军战史》（军事科学院）"]
+    "sources": [
+      "《中国人民解放军战史》（军事科学院）"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "ccp",
+          "kind": "advance",
+          "label": "东野入关 先取塘沽张家口分割包围",
+          "pts": [
+            {
+              "lng": 123.43,
+              "lat": 41.8,
+              "name": "沈阳"
+            },
+            {
+              "lng": 117.2,
+              "lat": 39.13,
+              "name": "天津"
+            }
+          ]
+        },
+        {
+          "side": "ccp",
+          "kind": "advance",
+          "label": "西线夺张家口",
+          "pts": [
+            {
+              "lng": 114.89,
+              "lat": 40.82,
+              "name": "张家口"
+            },
+            {
+              "lng": 116.41,
+              "lat": 39.9,
+              "name": "北京"
+            }
+          ]
+        },
+        {
+          "side": "ccp",
+          "kind": "advance",
+          "label": "攻克天津",
+          "pts": [
+            {
+              "lng": 117.2,
+              "lat": 39.13,
+              "name": "天津"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "annihilate",
+          "at": "天津",
+          "label": "29小时攻克天津"
+        },
+        {
+          "kind": "peaceful",
+          "at": "北京",
+          "label": "傅作义接受改编 北平和平解放"
+        }
+      ]
+    }
   },
   {
     "id": "taiyuan-1948",
@@ -365,14 +1945,74 @@
     "category": "解放战争",
     "start": "1948-10-05",
     "end": "1949-04-24",
-    "location": { "text": "山西太原", "province": "山西", "lng": 112.55, "lat": 37.87 },
+    "location": {
+      "text": "山西太原",
+      "province": "山西",
+      "lng": 112.55,
+      "lat": 37.87
+    },
     "participants": [
-      { "generalId": "xu-xiangqian", "camp": "ccp", "role": "华北军区第一副司令员、第十八兵团司令员兼政委" },
-      { "generalId": "yan-xishan", "camp": "kmt", "role": "太原绥靖公署主任（守方）" }
+      {
+        "generalId": "xu-xiangqian",
+        "camp": "ccp",
+        "role": "华北军区第一副司令员、第十八兵团司令员兼政委"
+      },
+      {
+        "generalId": "yan-xishan",
+        "camp": "kmt",
+        "role": "太原绥靖公署主任（守方）"
+      }
     ],
     "outcome": "解放太原，山西全境解放",
     "summary": "华北军区部队在徐向前指挥下攻坚太原，历时半年攻克这座设防坚固的城市，山西全境解放。徐向前抱病指挥，是解放战争中著名的攻坚战役。",
-    "sources": ["《中国人民解放军战史》（军事科学院）"]
+    "sources": [
+      "《中国人民解放军战史》（军事科学院）"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "ccp",
+          "kind": "advance",
+          "label": "华北军区攻坚太原",
+          "pts": [
+            {
+              "lng": 114.51,
+              "lat": 38.04,
+              "name": "石家庄"
+            },
+            {
+              "lng": 112.55,
+              "lat": 37.87,
+              "name": "太原"
+            }
+          ]
+        },
+        {
+          "side": "ccp",
+          "kind": "advance",
+          "label": "十八兵团北上会攻",
+          "pts": [
+            {
+              "lng": 118.35,
+              "lat": 35.05,
+              "name": "临沂"
+            },
+            {
+              "lng": 112.55,
+              "lat": 37.87,
+              "name": "太原"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "annihilate",
+          "at": "太原",
+          "label": "历时半年攻克太原 山西解放"
+        }
+      ]
+    }
   },
   {
     "id": "crossing-yangtze-1949",
@@ -381,14 +2021,100 @@
     "category": "解放战争",
     "start": "1949-04-20",
     "end": "1949-06-02",
-    "location": { "text": "长江中下游", "province": "江苏", "lng": 118.79, "lat": 32.06 },
+    "location": {
+      "text": "长江中下游",
+      "province": "江苏",
+      "lng": 118.79,
+      "lat": 32.06
+    },
     "participants": [
-      { "generalId": "liu-bocheng", "camp": "ccp", "role": "第二野战军司令员" },
-      { "generalId": "chen-yi", "camp": "ccp", "role": "第三野战军司令员兼政治委员" },
-      { "generalId": "su-yu", "camp": "ccp", "role": "第三野战军副司令员兼第二副政委" }
+      {
+        "generalId": "liu-bocheng",
+        "camp": "ccp",
+        "role": "第二野战军司令员"
+      },
+      {
+        "generalId": "chen-yi",
+        "camp": "ccp",
+        "role": "第三野战军司令员兼政治委员"
+      },
+      {
+        "generalId": "su-yu",
+        "camp": "ccp",
+        "role": "第三野战军副司令员兼第二副政委"
+      }
     ],
     "outcome": "解放军突破长江防线，解放南京，国民党政权在大陆的统治终结",
     "summary": "解放军百万大军横渡长江，突破国民党军长江防线，4月23日解放南京，标志国民党在大陆统治的结束。",
-    "sources": ["《中国人民解放军战史》（军事科学院）"]
+    "sources": [
+      "《中国人民解放军战史》（军事科学院）"
+    ],
+    "campaign": {
+      "arrows": [
+        {
+          "side": "ccp",
+          "kind": "advance",
+          "label": "百万大军横渡长江 直取南京",
+          "pts": [
+            {
+              "lng": 114.3,
+              "lat": 30.59,
+              "name": "武汉"
+            },
+            {
+              "lng": 116,
+              "lat": 29.71,
+              "name": "九江"
+            },
+            {
+              "lng": 118.79,
+              "lat": 32.06,
+              "name": "南京"
+            }
+          ]
+        },
+        {
+          "side": "ccp",
+          "kind": "advance",
+          "label": "东集团进军上海杭州",
+          "pts": [
+            {
+              "lng": 118.79,
+              "lat": 32.06,
+              "name": "南京"
+            },
+            {
+              "lng": 121.47,
+              "lat": 31.23,
+              "name": "上海"
+            }
+          ]
+        },
+        {
+          "side": "enemy",
+          "kind": "retreat",
+          "label": "国民党军长江防线崩溃南撤",
+          "pts": [
+            {
+              "lng": 118.79,
+              "lat": 32.06,
+              "name": "南京"
+            },
+            {
+              "lng": 120.15,
+              "lat": 30.28,
+              "name": "杭州"
+            }
+          ]
+        }
+      ],
+      "clashes": [
+        {
+          "kind": "victory",
+          "at": "南京",
+          "label": "解放南京 国民党大陆统治终结"
+        }
+      ]
+    }
   }
 ]

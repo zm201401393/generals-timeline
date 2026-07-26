@@ -77,5 +77,88 @@ function baseSvg(extraDefs = '') {
   return { viewBox: `0 0 ${VB_W} ${VB_H}`, outline: outlinePath(), grid, defs: extraDefs };
 }
 
-window.CNMap = { VB_W, VB_H, project, outlinePath, baseSvg, CITY, PROVINCE_CENTER };
+// ---------- 战图绘制 ----------
+const SIDE_COLOR = { kmt: '#1d4ed8', ccp: '#b91c1c', enemy: '#57534e' };
+const SIDE_LABEL = { kmt: '国民党军', ccp: '共产党军', enemy: '日军 / 北洋 / 敌方' };
+
+// Catmull-Rom → 平滑贝塞尔路径（输入 [[x,y],...]）
+function smoothPath(pts) {
+  if (pts.length < 2) return '';
+  if (pts.length === 2) return `M${pts[0][0]},${pts[0][1]} L${pts[1][0]},${pts[1][1]}`;
+  let d = `M${pts[0][0]},${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+    const c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6;
+    const c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
+    d += ` C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2[0]},${p2[1]}`;
+  }
+  return d;
+}
+
+// 箭头 marker 定义（三色 × 进军/退却）
+function arrowDefs() {
+  let m = '';
+  for (const [side, col] of Object.entries(SIDE_COLOR)) {
+    m += `<marker id="arw-${side}" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M1,1 L11,6 L1,11 L4,6 Z" fill="${col}"/></marker>`;
+  }
+  return m;
+}
+
+// 单条进军/退却箭头 → SVG path 串（含描线动画所需 pathLength 由前端读取）
+function arrowSvg(arrow, idx) {
+  const xy = arrow.pts.map(p => project(p.lng, p.lat));
+  if (xy.length < 2) {
+    // 单点：画一个原地强调圈
+    const [x, y] = xy[0] || [0, 0];
+    return `<circle class="war-arrow" data-i="${idx}" cx="${x}" cy="${y}" r="10" fill="none" stroke="${SIDE_COLOR[arrow.side]}" stroke-width="3"/>`;
+  }
+  const d = smoothPath(xy);
+  const col = SIDE_COLOR[arrow.side] || '#666';
+  const retreat = arrow.kind === 'retreat';
+  return `<path class="war-arrow" data-i="${idx}" d="${d}" fill="none" stroke="${col}"
+    stroke-width="${retreat ? 3 : 5}" stroke-linecap="round" stroke-linejoin="round"
+    ${retreat ? 'stroke-dasharray="8 6"' : ''} opacity="${retreat ? 0.8 : 0.9}"
+    marker-end="url(#arw-${arrow.side})"/>`;
+}
+
+// 交战/歼灭/胜利/和平解放标记
+function clashSvg(clash, atXY) {
+  const [x, y] = atXY;
+  const kind = clash.kind;
+  if (kind === 'annihilate' || kind === 'battle') {
+    const col = kind === 'annihilate' ? '#b91c1c' : '#78716c';
+    return `<g class="war-clash" transform="translate(${x},${y})">
+      <circle r="11" fill="none" stroke="${col}" stroke-width="2.5"/>
+      <path d="M-8,-8 L8,8 M-8,8 L8,-8" stroke="${col}" stroke-width="2.5"/>
+    </g>`;
+  }
+  if (kind === 'victory') {
+    return `<g class="war-clash" transform="translate(${x},${y})">
+      <path d="M0,-11 L3.2,-3.5 L11,-3.5 L4.8,1.5 L7,9 L0,4.5 L-7,9 L-4.8,1.5 L-11,-3.5 L-3.2,-3.5 Z" fill="#d97706" stroke="#fff" stroke-width="0.8"/></g>`;
+  }
+  if (kind === 'peaceful') {
+    return `<g class="war-clash" transform="translate(${x},${y})">
+      <circle r="10" fill="#16a34a" opacity="0.85"/><circle r="5" fill="#fff"/></g>`;
+  }
+  return '';
+}
+
+// 图例（右下角）
+function warLegend(sides) {
+  const items = [];
+  if (sides.has('kmt')) items.push(`<span style="color:#1d4ed8">▬▶ 国民党军进军</span>`);
+  if (sides.has('ccp')) items.push(`<span style="color:#b91c1c">▬▶ 共产党军进军</span>`);
+  if (sides.has('enemy')) items.push(`<span style="color:#57534e">▬▶ 日军/北洋等</span>`);
+  items.push(`<span style="color:#57534e">┅▶ 退却/败退</span>`);
+  items.push(`<span style="color:#b91c1c">⊗ 交战/歼灭</span>`);
+  items.push(`<span style="color:#d97706">★ 胜利</span>`);
+  items.push(`<span style="color:#16a34a">◉ 和平解放</span>`);
+  return items;
+}
+
+window.CNMap = {
+  VB_W, VB_H, project, outlinePath, baseSvg, CITY, PROVINCE_CENTER,
+  SIDE_COLOR, SIDE_LABEL, smoothPath, arrowDefs, arrowSvg, clashSvg, warLegend
+};
 })();

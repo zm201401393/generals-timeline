@@ -812,84 +812,156 @@ function renderWarView() {
   bindWarMap(n);
 }
 
-// 战争模式地图卡片：发生地 + 下辖战斗按时间点亮
-function warMapPoints(n) {
-  // 主战役地点 + 各参战将领在该战的相关地（用战役自身坐标）+ 下辖战斗地点
-  const pts = [];
-  if (n.location && n.location.lng != null) {
-    pts.push({ name: n.name, lng: n.location.lng, lat: n.location.lat, year: toYear(n.start), main: true, text: n.location.text });
+// 战争模式战图卡片：进军箭头 + 交战标记 + 图例（有 campaign 用战图，否则退回简单打点）
+function coordOf(n, name) {
+  const M = window.CNMap;
+  if (M.CITY[name]) return M.project(M.CITY[name][0], M.CITY[name][1]);
+  // 在该战役 campaign 的箭头点里找
+  if (n.campaign) {
+    for (const a of n.campaign.arrows || []) {
+      const hit = (a.pts || []).find(p => p.name === name);
+      if (hit) return M.project(hit.lng, hit.lat);
+    }
   }
-  BATTLES.filter(b => b.belongsTo === n.id).forEach(b => {
-    if (b.location && b.location.lng != null)
-      pts.push({ name: b.name, lng: b.location.lng, lat: b.location.lat, year: toYear(b.start), text: b.location.text });
-  });
-  // 去重（同坐标）
-  const seen = new Set();
-  return pts.filter(p => { const k = p.lng + ',' + p.lat; if (seen.has(k)) return false; seen.add(k); return true; })
-    .sort((a, b) => (a.year || 0) - (b.year || 0));
+  if (n.location && n.location.text && n.location.text.includes(name) && n.location.lng != null)
+    return M.project(n.location.lng, n.location.lat);
+  return null;
 }
 
 function renderWarMapCard(n) {
   const M = window.CNMap;
   if (!M) return '';
-  const pts = warMapPoints(n);
-  if (!pts.length) return '';
+  const cam = n.campaign;
   const base = M.baseSvg();
-  const dots = pts.map((p, i) => {
-    const [x, y] = M.project(p.lng, p.lat);
-    const r = p.main ? 9 : 6;
-    const col = p.main ? '#b45309' : '#78716c';
-    return `<g class="war-pt opacity-0" data-i="${i}">
-      <circle cx="${x}" cy="${y}" r="${r + 6}" fill="${col}" opacity="0.18"><animate attributeName="r" values="${r};${r + 8};${r}" dur="1.8s" repeatCount="indefinite"/></circle>
-      <circle cx="${x}" cy="${y}" r="${r}" fill="${col}" stroke="#fff" stroke-width="2"/>
-      <text x="${x}" y="${y - r - 5}" text-anchor="middle" font-size="12" font-weight="700" fill="#44403c" style="paint-order:stroke;stroke:#f5f1e8;stroke-width:3">${p.text || p.name}</text>
-      ${p.year ? `<text x="${x}" y="${y + r + 14}" text-anchor="middle" font-size="10" fill="#78716c" style="paint-order:stroke;stroke:#f5f1e8;stroke-width:2.5">${p.year}</text>` : ''}
-    </g>`;
+
+  // 无战图数据：退回简单主战场打点
+  if (!cam || !(cam.arrows && cam.arrows.length)) {
+    if (!n.location || n.location.lng == null) return '';
+    const [x, y] = M.project(n.location.lng, n.location.lat);
+    return `
+      <div class="card rounded-xl p-5">
+        <h3 class="font-hei font-bold text-ink-soft text-sm mb-3">🗺 战役地理位置</h3>
+        <div class="rounded-lg overflow-hidden border hairline" style="background:linear-gradient(#f0ead9,#e8e0cd)">
+          <svg viewBox="${base.viewBox}" class="w-full" style="max-height:52vh">
+            <path d="${base.outline}" fill="#fdfbf6" stroke="#c4b696" stroke-width="1.5" opacity="0.9"/>${base.grid}
+            <circle cx="${x}" cy="${y}" r="15" fill="#b45309" opacity="0.2"><animate attributeName="r" values="9;17;9" dur="1.8s" repeatCount="indefinite"/></circle>
+            <circle cx="${x}" cy="${y}" r="8" fill="#b45309" stroke="#fff" stroke-width="2"/>
+            <text x="${x}" y="${y - 14}" text-anchor="middle" font-size="13" font-weight="700" fill="#44403c" style="paint-order:stroke;stroke:#f5f1e8;stroke-width:3">${n.location.text}</text>
+          </svg>
+        </div>
+        <p class="text-[11px] text-ink-faint mt-2">底图为简化示意（非精确国界）。</p>
+      </div>`;
+  }
+
+  // 箭头
+  const arrowsSvg = cam.arrows.map((a, i) => M.arrowSvg(a, i)).join('');
+  // 交战标记
+  const clashSvg = (cam.clashes || []).map(c => {
+    const xy = coordOf(n, c.at);
+    return xy ? M.clashSvg(c, xy) : '';
   }).join('');
+  // 起点/终点城市标签（取每条箭头首尾）
+  const labelSet = new Map();
+  cam.arrows.forEach(a => {
+    (a.pts || []).forEach((p, idx) => {
+      const [x, y] = M.project(p.lng, p.lat);
+      labelSet.set(p.name, `<text x="${x}" y="${y - 9}" text-anchor="middle" font-size="11" font-weight="600" fill="#292524" style="paint-order:stroke;stroke:#f5f1e8;stroke-width:3">${p.name}</text>
+        <circle cx="${x}" cy="${y}" r="2.5" fill="#292524"/>`);
+    });
+  });
+  const cityLabels = [...labelSet.values()].join('');
+  const sides = new Set(cam.arrows.map(a => a.side));
+  const legend = M.warLegend(sides).map(s => `<span class="inline-block mr-3 mb-1">${s}</span>`).join('');
 
   return `
     <div class="card rounded-xl p-5">
       <div class="flex items-center gap-3 mb-3 flex-wrap">
-        <h3 class="font-hei font-bold text-ink-soft text-sm">🗺 战役地理位置${pts.length > 1 ? ' · 战事演进' : ''}</h3>
-        ${pts.length > 1 ? `<button id="war-play" class="text-xs bg-amber-600 text-white px-3 py-1 rounded-md hover:bg-amber-500">▶ 播放演进（${pts.length} 处）</button>` : ''}
-        <span id="war-map-cap" class="text-xs text-ink-faint italic"></span>
+        <h3 class="font-hei font-bold text-ink-soft text-sm">🗺 战役进军路线示意图</h3>
+        <button id="war-play" class="text-xs bg-amber-600 text-white px-3 py-1 rounded-md hover:bg-amber-500">▶ 播放战事过程</button>
+        <button id="war-showall" class="text-xs border hairline px-3 py-1 rounded-md hover:bg-stone-50">显示全部</button>
+        <span id="war-map-cap" class="text-xs text-ink-faint italic flex-1"></span>
       </div>
-      <div class="rounded-lg overflow-hidden border hairline" style="background:linear-gradient(#f0ead9,#e8e0cd)">
-        <svg viewBox="${base.viewBox}" class="w-full" style="max-height:52vh">
-          <path d="${base.outline}" fill="#fdfbf6" stroke="#c4b696" stroke-width="1.5" opacity="0.9"/>
+      <div class="rounded-lg overflow-hidden border hairline" style="background:linear-gradient(#eef2f4,#e3ddd0)">
+        <svg id="war-svg" viewBox="${base.viewBox}" class="w-full" style="max-height:56vh">
+          <defs>${M.arrowDefs()}</defs>
+          <path d="${base.outline}" fill="#fbf9f3" stroke="#c4b696" stroke-width="1.5" opacity="0.92"/>
           ${base.grid}
-          ${dots}
+          <g id="war-arrows">${arrowsSvg}</g>
+          <g id="war-clashes" opacity="0">${clashSvg}</g>
+          <g id="war-cities">${cityLabels}</g>
         </svg>
       </div>
-      <p class="text-[11px] text-ink-faint mt-2">底图为简化示意（非精确国界），红点为主战场，灰点为下辖 / 相关战斗，按发生时间先后点亮。</p>
+      <div class="text-[11px] text-ink-soft mt-2 leading-relaxed">${legend}</div>
+      <p class="text-[11px] text-ink-faint mt-1">底图与进军路线均为<b>示意性质</b>（非精确国界与行军轨迹），依据官方战史主要进军轴线绘制。</p>
     </div>`;
 }
 
 function bindWarMap(n) {
-  const pts = document.querySelectorAll('#view-war .war-pt');
-  if (!pts.length) return;
+  const cam = n.campaign;
+  const svg = document.getElementById('war-svg');
+  if (!svg || !cam) return;
+  const arrows = [...svg.querySelectorAll('.war-arrow')];
+  const clashesG = document.getElementById('war-clashes');
   const cap = document.getElementById('war-map-cap');
-  const ptsData = warMapPoints(n);
-  // 默认全部显示
-  const showAll = () => pts.forEach(p => p.classList.remove('opacity-0'));
+
+  // 预备描线动画：设置 dash 初始隐藏
+  arrows.forEach(a => {
+    if (a.tagName === 'path') {
+      const len = a.getTotalLength ? a.getTotalLength() : 300;
+      a.style.setProperty('--len', len);
+      a.dataset.len = len;
+    }
+  });
+  const showAll = () => {
+    arrows.forEach(a => {
+      if (a.tagName === 'path') { a.style.strokeDasharray = a.dataset.orig || ''; a.style.strokeDashoffset = '0'; a.style.opacity = ''; }
+      else a.style.opacity = '';
+    });
+    if (clashesG) clashesG.setAttribute('opacity', '1');
+    if (cap) cap.textContent = '';
+  };
+  const reset = () => {
+    arrows.forEach(a => {
+      if (a.tagName === 'path') {
+        const len = a.dataset.len || 300;
+        // 记录原始 dasharray（退却虚线）
+        if (a.dataset.orig == null) a.dataset.orig = a.getAttribute('stroke-dasharray') || '';
+        a.style.strokeDasharray = len;
+        a.style.strokeDashoffset = len;
+      } else { a.style.opacity = '0'; }
+    });
+    if (clashesG) clashesG.setAttribute('opacity', '0');
+  };
   const play = () => {
-    pts.forEach(p => p.classList.add('opacity-0'));
+    reset();
     let i = 0;
     const step = () => {
-      if (i >= pts.length) { if (cap) cap.textContent = '演进结束'; return; }
-      pts[i].classList.remove('opacity-0');
-      pts[i].style.transition = 'opacity .5s';
-      const d = ptsData[i];
-      if (cap) cap.textContent = `${d.year || ''} ${d.text || d.name}`;
+      if (i >= arrows.length) {
+        if (clashesG) clashesG.setAttribute('opacity', '1');
+        if (cap) cap.textContent = '战事结束：' + (cam.clashes && cam.clashes.length ? cam.clashes.map(c => c.label).join('；') : n.outcome || '');
+        return;
+      }
+      const a = arrows[i];
+      const arw = cam.arrows[i];
+      if (a.tagName === 'path') {
+        a.style.transition = 'stroke-dashoffset 1.1s ease-in-out';
+        a.style.strokeDashoffset = '0';
+        // 动画结束后恢复退却虚线样式
+        setTimeout(() => { if (a.dataset.orig) a.style.strokeDasharray = a.dataset.orig; }, 1150);
+      } else { a.style.transition = 'opacity .5s'; a.style.opacity = '1'; }
+      if (cap) cap.textContent = `${arw.side === 'kmt' ? '国民党军' : arw.side === 'ccp' ? '共产党军' : '敌方'}：${arw.label || '进军'}`;
       i++;
-      setTimeout(step, 900);
+      setTimeout(step, 1250);
     };
     step();
   };
-  const btn = document.getElementById('war-play');
-  if (btn) btn.onclick = play;
-  showAll();  // 初始全显，点播放才逐个演进
+  const playBtn = document.getElementById('war-play');
+  const allBtn = document.getElementById('war-showall');
+  if (playBtn) playBtn.onclick = play;
+  if (allBtn) allBtn.onclick = showAll;
+  showAll();   // 初始全部显示，点“播放”才逐条描线
 }
+
 
 // ---------- 启动 ----------
 function init() {
