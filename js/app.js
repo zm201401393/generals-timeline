@@ -832,67 +832,96 @@ function renderWarMapCard(n) {
   const M = window.CNMap;
   if (!M) return '';
   const cam = n.campaign;
-  const base = M.baseSvg();
 
-  // 无战图数据：退回简单主战场打点
+  // 无战图数据：退回主战场单点（也做省级聚焦）
   if (!cam || !(cam.arrows && cam.arrows.length)) {
     if (!n.location || n.location.lng == null) return '';
+    const fv = M.focusView([{ lng: n.location.lng, lat: n.location.lat }], 1.2);
     const [x, y] = M.project(n.location.lng, n.location.lat);
+    const s = (1 / fv.k).toFixed(3);
     return `
       <div class="card rounded-xl p-5">
         <h3 class="font-hei font-bold text-ink-soft text-sm mb-3">🗺 战役地理位置</h3>
-        <div class="rounded-lg overflow-hidden border hairline" style="background:linear-gradient(#f0ead9,#e8e0cd)">
-          <svg viewBox="${base.viewBox}" class="w-full" style="max-height:52vh">
-            <path d="${base.outline}" fill="#fdfbf6" stroke="#c4b696" stroke-width="1.5" opacity="0.9"/>${base.grid}
-            <circle cx="${x}" cy="${y}" r="15" fill="#b45309" opacity="0.2"><animate attributeName="r" values="9;17;9" dur="1.8s" repeatCount="indefinite"/></circle>
-            <circle cx="${x}" cy="${y}" r="8" fill="#b45309" stroke="#fff" stroke-width="2"/>
-            <text x="${x}" y="${y - 14}" text-anchor="middle" font-size="13" font-weight="700" fill="#44403c" style="paint-order:stroke;stroke:#f5f1e8;stroke-width:3">${n.location.text}</text>
+        <div class="rounded-lg overflow-hidden border hairline" style="background:linear-gradient(#eef2f4,#e3ddd0)">
+          <svg viewBox="${fv.viewBox}" class="w-full" style="max-height:56vh">
+            <path d="${M.outlinePath()}" fill="#fbf9f3" stroke="#c4b696" stroke-width="${(1.5/fv.k).toFixed(2)}" opacity="0.9"/>
+            <g transform="translate(${x},${y}) scale(${s})">
+              <circle r="15" fill="#b45309" opacity="0.2"><animate attributeName="r" values="9;17;9" dur="1.8s" repeatCount="indefinite"/></circle>
+              <circle r="8" fill="#b45309" stroke="#fff" stroke-width="2"/>
+              <text y="-14" text-anchor="middle" font-size="13" font-weight="700" fill="#44403c" style="paint-order:stroke;stroke:#f5f1e8;stroke-width:3">${n.location.text}</text>
+            </g>
           </svg>
         </div>
         <p class="text-[11px] text-ink-faint mt-2">底图为简化示意（非精确国界）。</p>
       </div>`;
   }
 
-  // 箭头
-  const arrowsSvg = cam.arrows.map((a, i) => M.arrowSvg(a, i)).join('');
-  // 交战标记
-  const clashSvg = (cam.clashes || []).map(c => {
-    const xy = coordOf(n, c.at);
-    return xy ? M.clashSvg(c, xy) : '';
+  // 省级聚焦：按本战役所有地点算 viewBox
+  const fv = M.focusView(M.campaignPoints(cam, n.location), 0.4);
+  const k = fv.k;
+  const hasPhases = cam.phases && cam.phases.length > 1;
+
+  // 箭头（带 phase 数据属性）
+  const arrowsSvg = cam.arrows.map((a, i) => {
+    const svg = M.arrowSvg(a, i, k);
+    return svg.replace('data-i="' + i + '"', `data-i="${i}" data-phase="${a.phase != null ? a.phase : 0}"`);
   }).join('');
-  // 起点/终点城市标签（取每条箭头首尾）
+
+  // 交战标记（带 phase）
+  const clashSvgStr = (cam.clashes || []).map((c, i) => {
+    const xy = coordOf(n, c.at);
+    if (!xy) return '';
+    const svg = M.clashSvg(c, xy, k);
+    return svg.replace('class="war-clash"', `class="war-clash" data-phase="${c.phase != null ? c.phase : 0}"`);
+  }).join('');
+
+  // 城市标签（反向缩放字号，含中心强调）
+  const fs = (px) => (px / k).toFixed(1);
+  const dotR = (2.5 / k).toFixed(2);
   const labelSet = new Map();
   cam.arrows.forEach(a => {
-    (a.pts || []).forEach((p, idx) => {
+    (a.pts || []).forEach(p => {
       const [x, y] = M.project(p.lng, p.lat);
-      labelSet.set(p.name, `<text x="${x}" y="${y - 9}" text-anchor="middle" font-size="11" font-weight="600" fill="#292524" style="paint-order:stroke;stroke:#f5f1e8;stroke-width:3">${p.name}</text>
-        <circle cx="${x}" cy="${y}" r="2.5" fill="#292524"/>`);
+      const isCenter = p.name === cam.center;
+      labelSet.set(p.name, `<text x="${x}" y="${y - (9/k)}" text-anchor="middle" font-size="${fs(isCenter ? 14 : 11)}" font-weight="${isCenter ? 800 : 600}" fill="${isCenter ? '#b45309' : '#292524'}" style="paint-order:stroke;stroke:#f5f1e8;stroke-width:${fs(3)}">${isCenter ? '★' : ''}${p.name}</text>
+        <circle cx="${x}" cy="${y}" r="${isCenter ? (3.5/k).toFixed(2) : dotR}" fill="${isCenter ? '#b45309' : '#292524'}"/>`);
     });
   });
   const cityLabels = [...labelSet.values()].join('');
   const sides = new Set(cam.arrows.map(a => a.side));
   const legend = M.warLegend(sides).map(s => `<span class="inline-block mr-3 mb-1">${s}</span>`).join('');
 
+  // 阶段切换器
+  let phaseTabs = '', phaseBanner = '';
+  if (hasPhases) {
+    phaseTabs = `<div id="war-phases" class="flex items-center gap-1.5 flex-wrap mt-2">
+      <button class="war-phase-btn text-xs px-2.5 py-1 rounded-full border font-medium active" data-phase="all" style="background:#b45309;color:#fff;border-color:#b45309">全程</button>
+      ${cam.phases.map((ph, i) => `<button class="war-phase-btn text-xs px-2.5 py-1 rounded-full border font-medium" data-phase="${i}" style="border-color:#b4530955;color:#b45309">${i + 1}. ${ph.name.split('·')[0].replace(/第.阶段/, '第' + '一二三四'[i] + '阶段')}</button>`).join('')}
+    </div>`;
+    phaseBanner = `<div id="war-phase-banner" class="mt-2 p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-[12px] text-amber-900 leading-relaxed"></div>`;
+  }
+
   return `
     <div class="card rounded-xl p-5">
-      <div class="flex items-center gap-3 mb-3 flex-wrap">
+      <div class="flex items-center gap-3 mb-1 flex-wrap">
         <h3 class="font-hei font-bold text-ink-soft text-sm">🗺 战役进军路线示意图</h3>
-        <button id="war-play" class="text-xs bg-amber-600 text-white px-3 py-1 rounded-md hover:bg-amber-500">▶ 播放战事过程</button>
+        <button id="war-play" class="text-xs bg-amber-600 text-white px-3 py-1 rounded-md hover:bg-amber-500">▶ ${hasPhases ? '按阶段演进' : '播放战事过程'}</button>
         <button id="war-showall" class="text-xs border hairline px-3 py-1 rounded-md hover:bg-stone-50">显示全部</button>
         <span id="war-map-cap" class="text-xs text-ink-faint italic flex-1"></span>
       </div>
-      <div class="rounded-lg overflow-hidden border hairline" style="background:linear-gradient(#eef2f4,#e3ddd0)">
-        <svg id="war-svg" viewBox="${base.viewBox}" class="w-full" style="max-height:56vh">
-          <defs>${M.arrowDefs()}</defs>
-          <path d="${base.outline}" fill="#fbf9f3" stroke="#c4b696" stroke-width="1.5" opacity="0.92"/>
-          ${base.grid}
+      ${phaseTabs}
+      ${phaseBanner}
+      <div class="rounded-lg overflow-hidden border hairline mt-2" style="background:linear-gradient(#eef2f4,#e3ddd0)">
+        <svg id="war-svg" viewBox="${fv.viewBox}" class="w-full" style="max-height:56vh">
+          <defs>${M.arrowDefs(k)}</defs>
+          <path d="${M.outlinePath()}" fill="#fbf9f3" stroke="#c4b696" stroke-width="${(1.5/k).toFixed(2)}" opacity="0.92"/>
           <g id="war-arrows">${arrowsSvg}</g>
-          <g id="war-clashes" opacity="0">${clashSvg}</g>
+          <g id="war-clashes" opacity="0">${clashSvgStr}</g>
           <g id="war-cities">${cityLabels}</g>
         </svg>
       </div>
       <div class="text-[11px] text-ink-soft mt-2 leading-relaxed">${legend}</div>
-      <p class="text-[11px] text-ink-faint mt-1">底图与进军路线均为<b>示意性质</b>（非精确国界与行军轨迹），依据官方战史主要进军轴线绘制。</p>
+      <p class="text-[11px] text-ink-faint mt-1">已聚焦至本战役相关省份区域。底图与进军路线均为<b>示意性质</b>（非精确国界与行军轨迹），依据官方战史主要进军轴线与阶段划分绘制。</p>
     </div>`;
 }
 
@@ -901,66 +930,113 @@ function bindWarMap(n) {
   const svg = document.getElementById('war-svg');
   if (!svg || !cam) return;
   const arrows = [...svg.querySelectorAll('.war-arrow')];
+  const clashes = [...svg.querySelectorAll('.war-clash')];
   const clashesG = document.getElementById('war-clashes');
   const cap = document.getElementById('war-map-cap');
+  const banner = document.getElementById('war-phase-banner');
+  const hasPhases = cam.phases && cam.phases.length > 1;
 
-  // 预备描线动画：设置 dash 初始隐藏
   arrows.forEach(a => {
     if (a.tagName === 'path') {
       const len = a.getTotalLength ? a.getTotalLength() : 300;
-      a.style.setProperty('--len', len);
       a.dataset.len = len;
+      if (a.dataset.orig == null) a.dataset.orig = a.getAttribute('stroke-dasharray') || '';
     }
   });
-  const showAll = () => {
+  const phaseOf = el => el.dataset.phase == null ? 0 : el.dataset.phase;
+
+  // 显示某阶段（'all' 或 阶段索引字符串）；不带动画，直接显示
+  const showPhase = (ph) => {
     arrows.forEach(a => {
-      if (a.tagName === 'path') { a.style.strokeDasharray = a.dataset.orig || ''; a.style.strokeDashoffset = '0'; a.style.opacity = ''; }
-      else a.style.opacity = '';
+      const show = ph === 'all' || phaseOf(a) === String(ph);
+      if (a.tagName === 'path') { a.style.strokeDasharray = a.dataset.orig || ''; a.style.strokeDashoffset = '0'; }
+      a.style.opacity = show ? '' : '0.06';
     });
+    clashes.forEach(c => { c.style.opacity = (ph === 'all' || phaseOf(c) === String(ph)) ? '1' : '0.06'; });
     if (clashesG) clashesG.setAttribute('opacity', '1');
-    if (cap) cap.textContent = '';
-  };
-  const reset = () => {
-    arrows.forEach(a => {
-      if (a.tagName === 'path') {
-        const len = a.dataset.len || 300;
-        // 记录原始 dasharray（退却虚线）
-        if (a.dataset.orig == null) a.dataset.orig = a.getAttribute('stroke-dasharray') || '';
-        a.style.strokeDasharray = len;
-        a.style.strokeDashoffset = len;
-      } else { a.style.opacity = '0'; }
+    if (banner) {
+      if (ph === 'all') banner.innerHTML = `<b>全程概览</b>：${n.outcome || ''}`;
+      else { const p = cam.phases[+ph]; banner.innerHTML = `<b>${p.name}</b>　<span class="text-amber-700">${p.period}</span><br>${p.desc}`; }
+    }
+    // 更新阶段按钮高亮
+    document.querySelectorAll('.war-phase-btn').forEach(b => {
+      const on = b.dataset.phase === String(ph);
+      b.style.background = on ? '#b45309' : ''; b.style.color = on ? '#fff' : '#b45309';
+      b.classList.toggle('active', on);
     });
-    if (clashesG) clashesG.setAttribute('opacity', '0');
   };
-  const play = () => {
-    reset();
+
+  const showAll = () => showPhase('all');
+
+  // 描线动画播放某组箭头
+  const animateArrows = (list, capPrefix, done) => {
     let i = 0;
     const step = () => {
-      if (i >= arrows.length) {
-        if (clashesG) clashesG.setAttribute('opacity', '1');
-        if (cap) cap.textContent = '战事结束：' + (cam.clashes && cam.clashes.length ? cam.clashes.map(c => c.label).join('；') : n.outcome || '');
-        return;
-      }
-      const a = arrows[i];
-      const arw = cam.arrows[i];
+      if (i >= list.length) { if (done) done(); return; }
+      const a = list[i], idx = +a.dataset.i, arw = cam.arrows[idx];
       if (a.tagName === 'path') {
-        a.style.transition = 'stroke-dashoffset 1.1s ease-in-out';
-        a.style.strokeDashoffset = '0';
-        // 动画结束后恢复退却虚线样式
-        setTimeout(() => { if (a.dataset.orig) a.style.strokeDasharray = a.dataset.orig; }, 1150);
-      } else { a.style.transition = 'opacity .5s'; a.style.opacity = '1'; }
-      if (cap) cap.textContent = `${arw.side === 'kmt' ? '国民党军' : arw.side === 'ccp' ? '共产党军' : '敌方'}：${arw.label || '进军'}`;
+        const len = a.dataset.len || 300;
+        a.style.transition = 'none'; a.style.strokeDasharray = len; a.style.strokeDashoffset = len; a.style.opacity = '';
+        a.getBoundingClientRect();
+        a.style.transition = 'stroke-dashoffset 1.05s ease-in-out'; a.style.strokeDashoffset = '0';
+        setTimeout(() => { if (a.dataset.orig) a.style.strokeDasharray = a.dataset.orig; }, 1100);
+      } else { a.style.transition = 'opacity .5s'; a.style.opacity = ''; }
+      if (cap) cap.textContent = `${capPrefix}${arw.side === 'kmt' ? '国民党军' : arw.side === 'ccp' ? '共产党军' : '敌方'}：${arw.label || '进军'}`;
       i++;
-      setTimeout(step, 1250);
+      setTimeout(step, 1200);
     };
     step();
   };
+
+  // 全程/分阶段 播放
+  const play = () => {
+    // 隐藏全部
+    arrows.forEach(a => { if (a.tagName === 'path') { a.style.transition='none'; const len=a.dataset.len||300; a.style.strokeDasharray=len; a.style.strokeDashoffset=len; } a.style.opacity = a.tagName==='path'?'':'0'; });
+    clashes.forEach(c => c.style.opacity = '0');
+    if (clashesG) clashesG.setAttribute('opacity', '1');
+
+    if (!hasPhases) {
+      animateArrows(arrows, '', () => {
+        clashes.forEach(c => { c.style.transition='opacity .4s'; c.style.opacity='1'; });
+        if (cap) cap.textContent = '战事结束：' + (cam.clashes && cam.clashes.length ? cam.clashes.map(c => c.label).join('；') : n.outcome || '');
+      });
+      return;
+    }
+    // 分阶段依次播放
+    let ph = 0;
+    const runPhase = () => {
+      if (ph >= cam.phases.length) {
+        showAll(); if (cap) cap.textContent = '全部阶段演示完毕';
+        return;
+      }
+      const p = cam.phases[ph];
+      if (banner) banner.innerHTML = `<b>${p.name}</b>　<span class="text-amber-700">${p.period}</span><br>${p.desc}`;
+      document.querySelectorAll('.war-phase-btn').forEach(b => { const on=b.dataset.phase===String(ph); b.style.background=on?'#b45309':''; b.style.color=on?'#fff':'#b45309'; });
+      const phArrows = arrows.filter(a => phaseOf(a) === String(ph));
+      const phClashes = clashes.filter(c => phaseOf(c) === String(ph));
+      animateArrows(phArrows, `第${'一二三四'[ph]}阶段 · `, () => {
+        phClashes.forEach(c => { c.style.transition='opacity .4s'; c.style.opacity='1'; });
+        ph++;
+        setTimeout(runPhase, 1400);
+      });
+    };
+    runPhase();
+  };
+
   const playBtn = document.getElementById('war-play');
   const allBtn = document.getElementById('war-showall');
   if (playBtn) playBtn.onclick = play;
   if (allBtn) allBtn.onclick = showAll;
-  showAll();   // 初始全部显示，点“播放”才逐条描线
+  // 阶段切换器点击
+  const phaseBox = document.getElementById('war-phases');
+  if (phaseBox) phaseBox.addEventListener('click', e => {
+    const b = e.target.closest('.war-phase-btn'); if (!b) return;
+    showPhase(b.dataset.phase === 'all' ? 'all' : +b.dataset.phase);
+  });
+
+  showAll();   // 初始全程显示
 }
+
 
 
 // ---------- 启动 ----------

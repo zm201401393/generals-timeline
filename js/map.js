@@ -95,50 +95,55 @@ function smoothPath(pts) {
   return d;
 }
 
-// 箭头 marker 定义（三色 × 进军/退却）
-function arrowDefs() {
+// 箭头 marker 定义（三色 × 进军/退却）；k=缩放系数，放大时 marker 反向缩小保持视觉一致
+function arrowDefs(k) {
+  k = k || 1;
+  const mw = (7 / k).toFixed(2);
   let m = '';
   for (const [side, col] of Object.entries(SIDE_COLOR)) {
-    m += `<marker id="arw-${side}" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    m += `<marker id="arw-${side}" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="${mw}" markerHeight="${mw}" orient="auto-start-reverse">
       <path d="M1,1 L11,6 L1,11 L4,6 Z" fill="${col}"/></marker>`;
   }
   return m;
 }
 
-// 单条进军/退却箭头 → SVG path 串（含描线动画所需 pathLength 由前端读取）
-function arrowSvg(arrow, idx) {
+// 单条进军/退却箭头 → SVG path 串；k=缩放系数，线宽随缩放反向调整
+function arrowSvg(arrow, idx, k) {
+  k = k || 1;
+  const sw = n => (n / k).toFixed(2);
   const xy = arrow.pts.map(p => project(p.lng, p.lat));
   if (xy.length < 2) {
-    // 单点：画一个原地强调圈
     const [x, y] = xy[0] || [0, 0];
-    return `<circle class="war-arrow" data-i="${idx}" cx="${x}" cy="${y}" r="10" fill="none" stroke="${SIDE_COLOR[arrow.side]}" stroke-width="3"/>`;
+    return `<circle class="war-arrow" data-i="${idx}" cx="${x}" cy="${y}" r="${sw(10)}" fill="none" stroke="${SIDE_COLOR[arrow.side]}" stroke-width="${sw(3)}"/>`;
   }
   const d = smoothPath(xy);
   const col = SIDE_COLOR[arrow.side] || '#666';
   const retreat = arrow.kind === 'retreat';
   return `<path class="war-arrow" data-i="${idx}" d="${d}" fill="none" stroke="${col}"
-    stroke-width="${retreat ? 3 : 5}" stroke-linecap="round" stroke-linejoin="round"
-    ${retreat ? 'stroke-dasharray="8 6"' : ''} opacity="${retreat ? 0.8 : 0.9}"
+    stroke-width="${sw(retreat ? 3 : 5)}" stroke-linecap="round" stroke-linejoin="round"
+    ${retreat ? `stroke-dasharray="${sw(8)} ${sw(6)}"` : ''} opacity="${retreat ? 0.8 : 0.9}"
     marker-end="url(#arw-${arrow.side})"/>`;
 }
 
-// 交战/歼灭/胜利/和平解放标记
-function clashSvg(clash, atXY) {
+// 交战/歼灭/胜利/和平解放标记；k=缩放系数
+function clashSvg(clash, atXY, k) {
+  k = k || 1;
+  const s = 1 / k;
   const [x, y] = atXY;
   const kind = clash.kind;
   if (kind === 'annihilate' || kind === 'battle') {
     const col = kind === 'annihilate' ? '#b91c1c' : '#78716c';
-    return `<g class="war-clash" transform="translate(${x},${y})">
+    return `<g class="war-clash" transform="translate(${x},${y}) scale(${s.toFixed(3)})">
       <circle r="11" fill="none" stroke="${col}" stroke-width="2.5"/>
       <path d="M-8,-8 L8,8 M-8,8 L8,-8" stroke="${col}" stroke-width="2.5"/>
     </g>`;
   }
   if (kind === 'victory') {
-    return `<g class="war-clash" transform="translate(${x},${y})">
+    return `<g class="war-clash" transform="translate(${x},${y}) scale(${s.toFixed(3)})">
       <path d="M0,-11 L3.2,-3.5 L11,-3.5 L4.8,1.5 L7,9 L0,4.5 L-7,9 L-4.8,1.5 L-11,-3.5 L-3.2,-3.5 Z" fill="#d97706" stroke="#fff" stroke-width="0.8"/></g>`;
   }
   if (kind === 'peaceful') {
-    return `<g class="war-clash" transform="translate(${x},${y})">
+    return `<g class="war-clash" transform="translate(${x},${y}) scale(${s.toFixed(3)})">
       <circle r="10" fill="#16a34a" opacity="0.85"/><circle r="5" fill="#fff"/></g>`;
   }
   return '';
@@ -157,8 +162,42 @@ function warLegend(sides) {
   return items;
 }
 
+// ---------- 聚焦缩放：按一组经纬度点算 viewBox（只显示相关省份区域）----------
+// pts: [{lng,lat},...]；返回 { viewBox, k }，k 为相对全图的放大系数（用于反向缩放标注/线宽）
+function focusView(pts, marginRatio) {
+  if (!pts || !pts.length) return { viewBox: `0 0 ${VB_W} ${VB_H}`, k: 1, x: 0, y: 0, w: VB_W, h: VB_H };
+  const xs = pts.map(p => project(p.lng, p.lat)[0]);
+  const ys = pts.map(p => project(p.lng, p.lat)[1]);
+  let minX = Math.min(...xs), maxX = Math.max(...xs);
+  let minY = Math.min(...ys), maxY = Math.max(...ys);
+  // 边距（按跨度比例 + 最小绝对边距，保证单点/近点也有合理视野）
+  const mr = marginRatio == null ? 0.35 : marginRatio;
+  let w = maxX - minX, h = maxY - minY;
+  const padX = Math.max(w * mr, 70), padY = Math.max(h * mr, 70);
+  minX -= padX; maxX += padX; minY -= padY; maxY += padY;
+  w = maxX - minX; h = maxY - minY;
+  // 维持画布宽高比（VB_W:VB_H），避免拉伸
+  const targetRatio = VB_W / VB_H;
+  const curRatio = w / h;
+  if (curRatio > targetRatio) { const nh = w / targetRatio; minY -= (nh - h) / 2; h = nh; }
+  else { const nw = h * targetRatio; minX -= (nw - w) / 2; w = nw; }
+  // 夹到画布范围内
+  minX = Math.max(minX, -40); minY = Math.max(minY, -40);
+  const k = VB_W / w;   // 放大系数
+  return { viewBox: `${minX.toFixed(1)} ${minY.toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}`, k, x: minX, y: minY, w, h };
+}
+
+// 收集一场战役 campaign 的全部经纬度点（用于 focusView）
+function campaignPoints(campaign, location) {
+  const pts = [];
+  (campaign?.arrows || []).forEach(a => (a.pts || []).forEach(p => pts.push({ lng: p.lng, lat: p.lat })));
+  if (location && location.lng != null) pts.push({ lng: location.lng, lat: location.lat });
+  return pts;
+}
+
 window.CNMap = {
   VB_W, VB_H, project, outlinePath, baseSvg, CITY, PROVINCE_CENTER,
-  SIDE_COLOR, SIDE_LABEL, smoothPath, arrowDefs, arrowSvg, clashSvg, warLegend
+  SIDE_COLOR, SIDE_LABEL, smoothPath, arrowDefs, arrowSvg, clashSvg, warLegend,
+  focusView, campaignPoints
 };
 })();
